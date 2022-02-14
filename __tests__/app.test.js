@@ -132,6 +132,40 @@ describe("/api/articles", () => {
     });
   });
 
+    describe("GET /api/articles/:article_id/comments", () => {
+    test.only("status: 200 - responds with comments object", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((response) => {
+          // check that response object has a single key of comments
+          expect(Object.keys(response.body)).toHaveLength(1);
+          expect(Object.keys(response.body)[0]).toEqual("comments");
+          // check that array of comment objects is the expected length
+          expect(response.body.comments).toHaveLength(11);
+          response.body.comments.forEach((comment) => {
+            expect(comment).toEqual(
+              expect.objectContaining({
+                comment_id: expect.any(Number),
+                votes: expect.any(Number),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+        test.only("status: 404 - responds with err msg for valid and existing article_id with no comments", () => {
+          return request(app)
+            .get("/api/articles/2/comments")
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("no comments exist for this article");
+            });
+        });
+    });
+
   // PATCH testing
   describe("PATCH /api/articles/:article:_id", () => {
     test("status:200, responds with the updated article while ignoring any keys other than inc_votes", () => {
