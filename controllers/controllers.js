@@ -1,4 +1,4 @@
-const { selectTopics, selectArticleById } = require("../models/models.js");
+const { selectTopics, selectArticleById, updateArticleById } = require("../models/models.js");
 
 // GET CONTROLLERS
 
@@ -23,9 +23,20 @@ exports.getArticleById = (req, res, next) => {
 };
 
 
-
 // POST CONTROLLERS
 
 // PATCH CONTROLLERS
+
+exports.patchArticleById = (req, res, next) => {
+  updateArticleById(req)
+    .then((article) => {
+      res.status(200).send({ article: article });
+    })
+    .catch((err) => {
+        console.log(err);
+      next(err);
+    });
+};
+
 
 // DELETE CONTROLLERS

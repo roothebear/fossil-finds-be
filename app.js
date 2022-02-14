@@ -1,7 +1,11 @@
 const express = require("express");
-const { getTopics, getArticleById } = require("./controllers/controllers.js");
+const {
+  getTopics,
+  getArticleById,
+  patchArticleById,
+} = require("./controllers/controllers.js");
 
-const { handleCustomErrors } = require("./controllers/errors-controllers.js");
+const { handleCustomErrors, handlePsqlErrors } = require("./controllers/errors-controllers.js");
 
 const app = express();
 app.use(express.json());
@@ -20,6 +24,9 @@ app.get("/api/articles/:article_id", getArticleById);
 
 // PATCH ENDPOINTS
 
+app.patch("/api/articles/:article_id", patchArticleById);
+
+
 // DELETE ENDPOINTS
 
 // ERROR HANDLING ENDPOINTS
@@ -29,5 +36,6 @@ app.all("/*", (req, res) => {
 });
 
 app.use(handleCustomErrors);
+app.use(handlePsqlErrors);
 
 module.exports = app;
