@@ -6,6 +6,14 @@ exports.selectTopics = (req) => {
   return db.query(`SELECT * FROM topics;`).then((result) => result.rows);
 };
 
+exports.selectArticles = (req) => {
+  return db.query(
+      `SELECT * 
+      FROM articles
+      ORDER BY created_at DESC;`
+  ).then((result) => result.rows);
+};
+
 exports.selectArticleById = (req) => {
   const { article_id } = req.params;
   return db
