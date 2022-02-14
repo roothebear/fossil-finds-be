@@ -1,4 +1,4 @@
-const { selectTopics } = require("../models/models.js");
+const { selectTopics, selectArticleById } = require("../models/models.js");
 
 // GET CONTROLLERS
 
@@ -11,6 +11,17 @@ exports.getTopics = (req, res, next) => {
       next(err);
     });
 };
+
+exports.getArticleById = (req, res, next) => {
+  selectArticleById(req)
+    .then((article) => {
+      res.status(200).send({ article: article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
 
 
 // POST CONTROLLERS

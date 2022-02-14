@@ -26,6 +26,8 @@ describe("/api", () => {
   });
 });
 
+// TOPICS
+
 describe("/api/topics", () => {
   // GET testing
   describe("GET /api/topics", () => {
@@ -49,5 +51,53 @@ describe("/api/topics", () => {
           });
         });
     });
+  });
+});
+
+// ARTICLES
+
+describe("/api/articles", () => {
+  // GET testing
+  describe("GET /api/articles/:article_id", () => {
+    test("status: 200 - responds with article object", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then((response) => {
+          // check that response object has a single key of articles/1
+          expect(Object.keys(response.body)).toHaveLength(1);
+          expect(Object.keys(response.body)[0]).toEqual("article");
+          expect(response.body.article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+            })
+          );
+        });
+    });
+    test("status: 404 - responds with err msg for valid but non-existent article_id", () => {
+      return request(app)
+        .get("/api/articles/99")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("no article with this id exists");
+        });
+    });
+  });
+});
+
+describe("Server - paths not found", () => {
+  test("status: 404 - responds with path not found msg for incorrect path", () => {
+    return request(app)
+      .get("/api/not-an-endpoint")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("path not found");
+      });
   });
 });
