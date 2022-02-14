@@ -107,7 +107,7 @@ describe("/api/articles", () => {
             topic: "mitch",
             author: "butter_bridge",
             body: "I find this existence challenging",
-            created_at: expect.any(String),
+            created_at: "2020-07-09T20:11:00.000Z",
             votes: 112,
           });
         });
@@ -121,7 +121,7 @@ describe("/api/articles", () => {
         .send(articleUpdate)
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("null value in body violates not-null constraint");
+          expect(msg).toBe("error - null value given");
         });
     });
     test("status:404 invalid inc_votes provided (string)", () => {
@@ -133,7 +133,7 @@ describe("/api/articles", () => {
         .send(articleUpdate)
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe(`invalid input syntax for type integer`);
+          expect(msg).toBe("error - invalid input");
         });
     });
     test("status:404 invalid inc_votes provided (boolean)", () => {
@@ -145,7 +145,7 @@ describe("/api/articles", () => {
         .send(articleUpdate)
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe(`invalid input syntax for type integer`);
+          expect(msg).toBe("error - invalid input");
         });
     });
   });
@@ -159,5 +159,34 @@ describe("Server - paths not found", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("path not found");
       });
+  });
+});
+
+// USERS
+
+describe("/api/users", () => {
+  // GET testing
+  describe("GET /api/users", () => {
+    test("status: 200 - responds with user object", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((response) => {
+          // check that response object has a single key of users
+          expect(Object.keys(response.body)).toHaveLength(1);
+          expect(Object.keys(response.body)[0]).toEqual("users");
+          // check that array of user objects is the expected length
+          expect(response.body.users).toHaveLength(4);
+          response.body.users.forEach((users) => {
+            expect(users).toEqual(
+              expect.objectContaining({
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String),
+              })
+            );
+          });
+        });
+    });
   });
 });

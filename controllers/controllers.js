@@ -1,4 +1,10 @@
-const { selectTopics, selectArticleById, updateArticleById } = require("../models/models.js");
+const {
+  selectTopics,
+  selectArticleById,
+  selectUsers,
+  updateArticleById,
+} = require("../models/models.js");
+
 
 // GET CONTROLLERS
 
@@ -22,6 +28,15 @@ exports.getArticleById = (req, res, next) => {
     });
 };
 
+exports.getUsers = (req, res, next) => {
+  selectUsers(req)
+    .then((users) => {
+      res.status(200).send({ users: users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
 
 // POST CONTROLLERS
 
@@ -33,10 +48,9 @@ exports.patchArticleById = (req, res, next) => {
       res.status(200).send({ article: article });
     })
     .catch((err) => {
-        console.log(err);
+      console.log(err);
       next(err);
     });
 };
-
 
 // DELETE CONTROLLERS

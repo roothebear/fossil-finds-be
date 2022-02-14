@@ -26,6 +26,10 @@ exports.selectArticleById = (req) => {
     });
 };
 
+exports.selectUsers = (req) => {
+  return db.query(`SELECT * FROM users;`).then((result) => result.rows);
+};
+
 // POST MODELS
 
 // PATCH MODELS
