@@ -1,5 +1,7 @@
 const express = require("express");
-const { getTopics } = require("./controllers/controllers.js");
+const { getTopics, getArticleById } = require("./controllers/controllers.js");
+
+const { handleCustomErrors } = require("./controllers/errors-controllers.js");
 
 const app = express();
 app.use(express.json());
@@ -12,6 +14,7 @@ app.get("/api", (req, res) => {
 
 app.get("/api/topics", getTopics);
 
+app.get("/api/articles/:article_id", getArticleById);
 
 // POST ENDPOINTS
 
@@ -24,5 +27,7 @@ app.get("/api/topics", getTopics);
 app.all("/*", (req, res) => {
   res.status(404).send({ msg: "path not found" });
 });
+
+app.use(handleCustomErrors);
 
 module.exports = app;
