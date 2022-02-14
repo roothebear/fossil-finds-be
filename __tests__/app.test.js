@@ -1,4 +1,5 @@
 const request = require("supertest");
+const { toBeSorted } = require("jest-sorted");
 const app = require("../app.js");
 const db = require("../db/connection.js");
 
@@ -58,6 +59,47 @@ describe("/api/topics", () => {
 
 describe("/api/articles", () => {
   // GET testing
+  describe("GET /api/articles", () => {
+    test("status: 200 - responds with article object", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          // check that response object has a single key of articles
+          expect(Object.keys(response.body)).toHaveLength(1);
+          expect(Object.keys(response.body)[0]).toEqual("articles");
+          // check that array of article objects is the expected length
+          expect(response.body.articles).toHaveLength(12);
+          response.body.articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                article_id: expect.any(Number),
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+              })
+            );
+          });
+        });
+    });
+    test("status: 200 - responds with article object ordered by date created descending", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          // check that array of treasure objects is in descending order by age
+          let dateCreated = response.body.articles.map((article) => {
+            return article["created_at"];
+          });
+          expect(dateCreated).toBeSorted({descending: true});
+        });
+    });
+  });
+
+
   describe("GET /api/articles/:article_id", () => {
     test("status: 200 - responds with article", () => {
       return request(app)
@@ -89,8 +131,9 @@ describe("/api/articles", () => {
         });
     });
   });
+
+  // PATCH testing
   describe("PATCH /api/articles/:article:_id", () => {
-    // PATCH testing
     test("status:200, responds with the updated article while ignoring any keys other than inc_votes", () => {
       const articleUpdate = {
         inc_votes: 12,
@@ -151,17 +194,6 @@ describe("/api/articles", () => {
   });
 });
 
-describe("Server - paths not found", () => {
-  test("status: 404 - responds with path not found msg for incorrect path", () => {
-    return request(app)
-      .get("/api/not-an-endpoint")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("path not found");
-      });
-  });
-});
-
 // USERS
 
 describe("/api/users", () => {
@@ -188,5 +220,18 @@ describe("/api/users", () => {
           });
         });
     });
+  });
+});
+
+// GENERAL
+
+describe("Server - paths not found", () => {
+  test("status: 404 - responds with path not found msg for incorrect path", () => {
+    return request(app)
+      .get("/api/not-an-endpoint")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("path not found");
+      });
   });
 });
