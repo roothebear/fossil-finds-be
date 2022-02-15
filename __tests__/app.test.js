@@ -85,18 +85,7 @@ describe("/api/articles", () => {
           });
         });
     });
-    test("status: 200 - responds with article object ordered by date created descending", () => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then((response) => {
-          // check that array of treasure objects is in descending order by age
-          let dateCreated = response.body.articles.map((article) => {
-            return article["created_at"];
-          });
-          expect(dateCreated).toBeSorted({ descending: true });
-        });
-    });
+    // comment counts
     test("status: 200 - articles include comment_count", () => {
       return request(app)
         .get("/api/articles")
@@ -121,6 +110,83 @@ describe("/api/articles", () => {
             11: 0,
             12: 0,
           });
+        });
+    });
+    // filtering by topic
+    test("status: 200 - responds with articles with articles filtered by topic (topic exists)", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then((response) => {
+          // check that array of article objects is the expected length
+          expect(response.body.articles).toHaveLength(11);
+          response.body.articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                topic: "mitch",
+              })
+            );
+          });
+        });
+    });
+    test("status: 200 - responds with empty array when topic exists but there are no matching articles", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toEqual([]);
+        });
+    });
+    // test for topic existence when empty array
+    test("status: 404 - responds with err msg when topic does not exist in database", () => {
+      return request(app)
+        .get("/api/articles?topic=bluepeter")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Topic not found");
+        });
+    });
+    // sort_by query
+    test("status: 200 - responds with article object with elements sorted by sort_by query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order=asc")
+        .expect(200)
+        .then((response) => {
+          // check that array of article objects is in descending order by title
+          let titles = response.body.articles.map((article) => {
+            return article.title;
+          });
+          console.log(titles);
+          expect(titles).toBeSorted({ ascending: true });
+        });
+    });
+    test("status: 400 - responds with err msg for invalid sort_by query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=nonexistentcolumn")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Error - Invalid sort_by query");
+        });
+    });
+    // order query
+    test("status: 200 - responds with article object ordered by date created descending", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          // check that array of treasure objects is in descending order by age
+          let dateCreated = response.body.articles.map((article) => {
+            return article["created_at"];
+          });
+          expect(dateCreated).toBeSorted({ descending: true });
+        });
+    });
+    test("status: 400 - responds with err msg for invalid order query", () => {
+      return request(app)
+        .get("/api/articles?order=nonsense")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Error - Invalid order query");
         });
     });
   });
