@@ -39,5 +39,9 @@
     "setupFilesAfterEnv": [
       "jest-extended/all"
     ]
+  },
+  "engines": {
+    "node": "17.5.0",
+    "npm": "8.4.1"
   }
 }
