@@ -97,6 +97,32 @@ describe("/api/articles", () => {
           expect(dateCreated).toBeSorted({ descending: true });
         });
     });
+    test("status: 200 - articles include comment_count", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          // make reference object for article comment counts
+          let commentCountArray = {};
+          response.body.articles.forEach((article) => {
+            commentCountArray[article["article_id"]] = article["comment_count"];
+          });
+          expect(commentCountArray).toEqual({
+            1: 11,
+            2: 0,
+            3: 2,
+            4: 0,
+            5: 2,
+            6: 1,
+            7: 0,
+            8: 0,
+            9: 2,
+            10: 0,
+            11: 0,
+            12: 0,
+          });
+        });
+    });
   });
 
   describe("GET /api/articles/:article_id", () => {
@@ -175,12 +201,12 @@ describe("/api/articles", () => {
           });
         });
     });
-    test("status: 404 - responds with err msg for valid and existing article_id with no comments", () => {
+    test("status: 200 - responds with empty array when no comments exist for article", () => {
       return request(app)
         .get("/api/articles/2/comments")
-        .expect(404)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("no comments exist for this article");
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments).toEqual([]);
         });
     });
   });
