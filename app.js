@@ -7,6 +7,7 @@ const {
   getCommentsByArticleId,
   patchArticleById,
   postCommentByArticleId,
+  removeCommentById,
 } = require("./controllers/controllers.js");
 
 const { handleCustomErrors, handlePsqlErrors } = require("./controllers/errors-controllers.js");
@@ -40,6 +41,8 @@ app.patch("/api/articles/:article_id", patchArticleById);
 
 
 // DELETE ENDPOINTS
+
+app.delete("/api/comments/:comment_id", removeCommentById);
 
 // ERROR HANDLING ENDPOINTS
 

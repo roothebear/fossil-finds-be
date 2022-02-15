@@ -368,6 +368,21 @@ describe("/api/articles", () => {
   });
 });
 
+// COMMENTS
+
+describe("/api/comments", () => {
+  // DELETE testing
+  describe("DELETE /api/comments/:comment_id", () => {
+    test("status: 204 comment is deleted", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+    });
+  });
+});
+
+
+
 // USERS
 
 describe("/api/users", () => {
