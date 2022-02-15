@@ -94,11 +94,10 @@ describe("/api/articles", () => {
           let dateCreated = response.body.articles.map((article) => {
             return article["created_at"];
           });
-          expect(dateCreated).toBeSorted({descending: true});
+          expect(dateCreated).toBeSorted({ descending: true });
         });
     });
   });
-
 
   describe("GET /api/articles/:article_id", () => {
     test("status: 200 - responds with article", () => {
@@ -122,6 +121,26 @@ describe("/api/articles", () => {
           );
         });
     });
+    test("status: 200 - responds with article including comment_count", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then((response) => {
+          // check that response object has a single key of articles/1
+          expect(Object.keys(response.body)).toHaveLength(1);
+          expect(Object.keys(response.body)[0]).toEqual("article");
+          expect(response.body.article).toEqual({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 100,
+            comment_count: 11,
+          });
+        });
+    });
     test("status: 404 - responds with err msg for valid but non-existent article_id", () => {
       return request(app)
         .get("/api/articles/99")
@@ -132,8 +151,8 @@ describe("/api/articles", () => {
     });
   });
 
-    describe("GET /api/articles/:article_id/comments", () => {
-    test.only("status: 200 - responds with comments object", () => {
+  describe("GET /api/articles/:article_id/comments", () => {
+    test("status: 200 - responds with comments object", () => {
       return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
@@ -156,15 +175,15 @@ describe("/api/articles", () => {
           });
         });
     });
-        test.only("status: 404 - responds with err msg for valid and existing article_id with no comments", () => {
-          return request(app)
-            .get("/api/articles/2/comments")
-            .expect(404)
-            .then(({ body: { msg } }) => {
-              expect(msg).toBe("no comments exist for this article");
-            });
+    test("status: 404 - responds with err msg for valid and existing article_id with no comments", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("no comments exist for this article");
         });
     });
+  });
 
   // PATCH testing
   describe("PATCH /api/articles/:article:_id", () => {
