@@ -2,6 +2,7 @@ const {
   selectTopics,
   selectArticles,
   selectArticleById,
+  selectCommentsByArticleId,
   selectUsers,
   updateArticleById,
 } = require("../models/models.js");
@@ -33,6 +34,16 @@ exports.getArticleById = (req, res, next) => {
   selectArticleById(req)
     .then((article) => {
       res.status(200).send({ article: article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getCommentsByArticleId = (req, res, next) => {
+  selectCommentsByArticleId(req)
+    .then((comments) => {
+      res.status(200).send({ comments: comments });
     })
     .catch((err) => {
       next(err);
