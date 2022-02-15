@@ -6,6 +6,7 @@ const {
   selectUsers,
   insertCommentByArticleId,
   updateArticleById,
+  deleteCommentById,
 } = require("../models/models.js");
 
 
@@ -88,3 +89,13 @@ exports.patchArticleById = (req, res, next) => {
 };
 
 // DELETE CONTROLLERS
+
+exports.removeCommentById = (req, res, next) => {
+  deleteCommentById(req)
+    .then(() => {
+      res.status(204).end();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};

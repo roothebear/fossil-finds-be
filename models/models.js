@@ -6,7 +6,6 @@ exports.selectTopics = (req) => {
   return db.query(`SELECT * FROM topics;`).then((result) => result.rows);
 };
 
-
 exports.selectArticles = (req) => {
   // destructure optional query parameters, we will deal with each in turn
   const { sort_by, order, topic } = req.query;
@@ -134,7 +133,6 @@ exports.insertCommentByArticleId = (req) => {
       [username, body, article_id]
     )
     .then((result) => {
-      console.log(result);
       return result.rows[0];
     });
 };
@@ -165,3 +163,15 @@ exports.updateArticleById = (req) => {
 };
 
 // DELETE MODELS
+
+exports.deleteCommentById = (req) => {
+  const { comment_id } = req.params;
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1;`, [
+      comment_id,
+    ])
+    .then((result) => {
+      console.log(result)
+      return result.rows[0];
+    });
+};
