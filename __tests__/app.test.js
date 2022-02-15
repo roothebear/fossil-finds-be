@@ -2,6 +2,7 @@ const request = require("supertest");
 const { toBeSorted } = require("jest-sorted");
 const app = require("../app.js");
 const db = require("../db/connection.js");
+const endpointsJson = require("../endpoints.json");
 
 // set up database with test data
 const seed = require("../db/seeds/seed.js");
@@ -15,13 +16,169 @@ afterAll(() => {
 
 describe("/api", () => {
   // GET testing
-  describe("GET /api", () => {
+  describe("GET /api/", () => {
     test("status: 200 - responds with all ok message", () => {
       return request(app)
         .get("/api")
         .expect(200)
         .then((response) => {
-          expect(response.body).toEqual({ msg: "all ok" });
+          expect(response.body).toEqual({
+            "GET /api": {
+              description:
+                "serves up a json representation of all the available endpoints of the api",
+            },
+            "GET /api/topics": {
+              description: "serves an array of all topics",
+              queries: [],
+              exampleResponse: {
+                topics: [
+                  {
+                    slug: "football",
+                    description: "Footie!",
+                  },
+                ],
+              },
+            },
+            "GET /api/articles": {
+              description: "serves an array of all topics",
+              queries: ["author", "topic", "sort_by", "order"],
+              exampleResponse: {
+                articles: [
+                  {
+                    title: "Seafood substitutions are increasing",
+                    topic: "cooking",
+                    author: "weegembump",
+                    body: "Text from the article..",
+                    created_at: 1527695953341,
+                  },
+                ],
+              },
+            },
+            "GET /api/articles/:article_id": {
+              description: "serves an article by id",
+              queries: [],
+              exampleResponse: {
+                article: [
+                  {
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: 1594329060000,
+                    votes: 100,
+                  },
+                ],
+              },
+            },
+            "GET /api/articles/:article_id/comments": {
+              description: "serves an article's comments by article id",
+              queries: [],
+              exampleResponse: {
+                comments: [
+                  {
+                    body: "Comment 1",
+                    votes: 16,
+                    author: "author1",
+                    article_id: 1,
+                    created_at: 1586179020000,
+                  },
+                  {
+                    body: "Comment 2",
+                    votes: 16,
+                    author: "author2",
+                    article_id: 1,
+                    created_at: 1586179020000,
+                  },
+                  {
+                    body: "Comment 3",
+                    votes: 16,
+                    author: "author3",
+                    article_id: 1,
+                    created_at: 1586179020000,
+                  },
+                ],
+              },
+            },
+            "GET /api/users": {
+              description: "serves an array of all users",
+              queries: [],
+              exampleResponse: {
+                users: [
+                  {
+                    username: "username",
+                    name: "name",
+                    avatar_url:
+                      "https: //www.example.com/wp-content/uploads/2022/01/string.jpg",
+                  },
+                ],
+              },
+            },
+            "GET /api/comments": {
+              description: "serves an array of all comments",
+              queries: [],
+              exampleResponse: {
+                comments: [
+                  {
+                    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                    votes: 16,
+                    author: "butter_bridge",
+                    article_id: 9,
+                    created_at: 1586179020000,
+                  },
+                  {
+                    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                    votes: 16,
+                    author: "butter_bridge",
+                    article_id: 9,
+                    created_at: 1586179020000,
+                  },
+                  {
+                    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                    votes: 16,
+                    author: "butter_bridge",
+                    article_id: 9,
+                    created_at: 1586179020000,
+                  },
+                ],
+              },
+            },
+            "POST /api/articles/:article_id/comments": {
+              description: "adds a new comment to an article by id",
+              queries: [],
+              exampleResponse: {
+                comment: [
+                  {
+                    body: "New comment",
+                    votes: 16,
+                    author: "author",
+                    article_id: 9,
+                    created_at: 1586179020000,
+                  },
+                ],
+              },
+            },
+            "PATCH /api/articles/:article_id": {
+              description: "update an article vote count",
+              queries: [],
+              exampleResponse: {
+                article: [
+                  {
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: 1594329060000,
+                    votes: 103,
+                  },
+                ],
+              },
+            },
+            "DELETE /api/comments/:comment_id": {
+              description: "Delete a comment by id",
+              queries: [],
+              exampleResponse: {},
+            },
+          });
         });
     });
   });
@@ -156,7 +313,6 @@ describe("/api/articles", () => {
           let titles = response.body.articles.map((article) => {
             return article.title;
           });
-          console.log(titles);
           expect(titles).toBeSorted({ ascending: true });
         });
     });
