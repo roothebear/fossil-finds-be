@@ -6,6 +6,7 @@ const {
   getArticleById,
   getCommentsByArticleId,
   patchArticleById,
+  postCommentByArticleId,
 } = require("./controllers/controllers.js");
 
 const { handleCustomErrors, handlePsqlErrors } = require("./controllers/errors-controllers.js");
@@ -30,6 +31,8 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 // POST ENDPOINTS
+
+app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
 // PATCH ENDPOINTS
 

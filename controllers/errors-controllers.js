@@ -9,9 +9,14 @@ exports.handlePsqlErrors = (err, req, res, next) => {
       .status(400)
       .send({ msg: "error - null value given" });
   }
+  if (err.code === "23503") {
+    res.status(400).send({ msg: "error - invalid input" });
+  }
   if (err.code === "22P02") {
     res
       .status(400)
       .send({ msg: "error - invalid input" });
   } else next(err);
+
 };
+
