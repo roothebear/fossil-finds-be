@@ -4,6 +4,7 @@ const {
   selectArticleById,
   selectCommentsByArticleId,
   selectUsers,
+  insertCommentByArticleId,
   updateArticleById,
 } = require("../models/models.js");
 
@@ -61,6 +62,17 @@ exports.getUsers = (req, res, next) => {
 };
 
 // POST CONTROLLERS
+
+exports.postCommentByArticleId = (req, res, next) => {
+  insertCommentByArticleId(req)
+    .then((comment) => {
+      res.status(201).send({ comment: comment });
+    })
+    .catch((err) => {
+      console.log(err)
+      next(err);
+    });
+};
 
 // PATCH CONTROLLERS
 

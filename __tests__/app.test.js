@@ -277,6 +277,35 @@ describe("/api/articles", () => {
     });
   });
 
+  // POST testing
+  describe("GET /api/articles/:article_id/comments", () => {
+    test("status: 201 - responds with comment", () => {
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send({ username: "icellusedkars", body: "A new comment" })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment).toEqual({
+            article_id: 2,
+            author: "icellusedkars",
+            body: "A new comment",
+            comment_id: expect.any(Number),
+            created_at: expect.any(String),
+            votes: 0,
+          });
+        });
+    });
+    test("status: 400 - error for invalid username (not in user table)", () => {
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send({ username: "invalidusername", body: 'Hello' })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("error - invalid input");
+        });
+    });
+  });
+
   // PATCH testing
   describe("PATCH /api/articles/:article:_id", () => {
     test("status:200, responds with the updated article while ignoring any keys other than inc_votes", () => {
