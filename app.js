@@ -13,7 +13,7 @@ app.use(express.json());
 app.use("/api", apiRouter);
 
 app.get("/", (req, res) => {
-  res.status(200).send("all okay from /");
+  res.status(200).send("welcome, all is ok!");
 });
 
 app.all("/*", (req, res) => {
