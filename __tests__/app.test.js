@@ -301,7 +301,48 @@ describe("/API/ARTICLES", () => {
   });
 
   // POST testing
-  describe("GET /api/articles/:article_id/comments", () => {
+  describe("POST /api/articles", () => {
+    test("status: 201 - responds with article added", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "icellusedkars",
+          title: "New title",
+          body: "A new article",
+          topic: "mitch",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.article).toEqual({
+            title: "New title",
+            topic: "mitch",
+            author: "icellusedkars",
+            body: "A new article",
+            created_at: expect.any(String),
+            votes: 0,
+            article_id: expect.any(Number),
+            comment_count: 0,
+          });
+        });
+    });
+    describe("Error handling", () => {
+      test("status: 400 - error for invalid inputs (author or topic does not exist)", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "invalidusername",
+            title: "New title",
+            body: "A new article",
+            topic: "invalidtopic",
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - invalid input");
+          });
+      });
+    });
+  });
+  describe("POST /api/articles/:article_id/comments", () => {
     test("status: 201 - responds with comment", () => {
       return request(app)
         .post("/api/articles/2/comments")
@@ -332,7 +373,7 @@ describe("/API/ARTICLES", () => {
   });
 
   // PATCH testing
-  describe("PATCH /api/articles/:article:_id", () => {
+  describe("PATCH /api/articles/:article_id", () => {
     test("status:200, responds with the updated article while ignoring any keys other than inc_votes", () => {
       const articleUpdate = {
         inc_votes: 12,
@@ -398,6 +439,68 @@ describe("/API/ARTICLES", () => {
 // COMMENTS
 
 describe("/API/COMMENTS", () => {
+  // PATCH testing
+  describe("PATCH /api/comments/:comment_id", () => {
+    test("status:200, responds with the updated comment while ignoring any keys other than inc_votes", () => {
+      const commentUpdate = {
+        inc_votes: 12,
+        irrelevant_key: "something irrelevant",
+      };
+      return request(app)
+        .patch("/api/comments/1")
+        .send(commentUpdate)
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comment).toEqual({
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            votes: 28,
+            author: "butter_bridge",
+            comment_id: 1,
+            article_id: 9,
+            created_at: "2020-04-06T12:17:00.000Z",
+          });
+        });
+    });
+    describe("Error handling", () => {
+      test("status:400, no inc_votes on request body", () => {
+        const commentUpdate = {
+          irrelevant_key: "something irrelevant",
+        };
+        return request(app)
+          .patch("/api/comments/2")
+          .send(commentUpdate)
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - null value given");
+          });
+      });
+      test("status:404 invalid inc_votes provided (string)", () => {
+        const commentUpdate = {
+          inc_votes: "a string",
+        };
+        return request(app)
+          .patch("/api/comments/3")
+          .send(commentUpdate)
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - invalid input");
+          });
+      });
+      test("status:404 invalid inc_votes provided (boolean)", () => {
+        const commentUpdate = {
+          inc_votes: false,
+        };
+        return request(app)
+          .patch("/api/comments/3")
+          .send(commentUpdate)
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - invalid input");
+          });
+      });
+    });
+  });
+
   // DELETE testing
   describe("DELETE /api/comments/:comment_id", () => {
     test("status: 204 comment is deleted", () => {
@@ -449,6 +552,37 @@ describe("/API/USERS", () => {
             );
           });
         });
+    });
+  });
+
+  describe("GET /api/users/:username", () => {
+    test("status: 200 - responds with user", () => {
+      return request(app)
+        .get("/api/users/butter_bridge")
+        .expect(200)
+        .then((response) => {
+          // check that response object has a single key of articles/1
+          expect(Object.keys(response.body)).toHaveLength(1);
+          expect(Object.keys(response.body)[0]).toEqual("user");
+          expect(response.body.user).toEqual(
+            expect.objectContaining({
+              username: "butter_bridge",
+              name: "jonny",
+              avatar_url:
+                "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+            })
+          );
+        });
+    });
+    describe("Error handling", () => {
+      test("status: 404 - responds with not found for valid but non-existent username", () => {
+        return request(app)
+          .get("/api/users/validusername")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("no user with this username exists");
+          });
+      });
     });
   });
 });

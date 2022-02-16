@@ -70,11 +70,17 @@ exports.selectArticles = (req) => {
   });
 };
 
-exports.selectArticleById = (req) => {
-  const { article_id } = req.params;
+exports.selectArticleById = (article_id) => {
   return db
     .query(
-      `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.body, articles.created_at, articles.votes, COUNT(comment_id )::INT AS comment_count 
+      `SELECT articles.article_id, 
+      articles.title, 
+      articles.topic, 
+      articles.author, 
+      articles.body, 
+      articles.created_at, 
+      articles.votes, 
+      COUNT(comment_id )::INT AS comment_count 
       FROM articles
       FULL JOIN comments ON articles.article_id = comments.article_id
             WHERE articles.article_id = $1
@@ -93,11 +99,15 @@ exports.selectArticleById = (req) => {
     });
 };
 
-exports.selectCommentsByArticleId = (req) => {
-  const { article_id } = req.params;
+exports.selectCommentsByArticleId = (article_id) => {
   return db
     .query(
-      `SELECT comments.author, comment_id, comments.votes, comments.body, comments.created_at FROM comments
+      `SELECT 
+      comments.author, 
+      comment_id, 
+      comments.votes, 
+      comments.body, 
+      comments.created_at FROM comments
       JOIN articles ON comments.article_id = articles.article_id
             WHERE comments.article_id = $1;`,
       [article_id]
@@ -109,9 +119,7 @@ exports.selectCommentsByArticleId = (req) => {
 
 // POST MODELS
 
-exports.insertCommentByArticleId = (req) => {
-  const { article_id } = req.params;
-  const { username, body } = req.body;
+exports.insertCommentByArticleId = (article_id, username, body) => {
   return db
     .query(
       `INSERT INTO comments 
@@ -125,11 +133,28 @@ exports.insertCommentByArticleId = (req) => {
     });
 };
 
+exports.insertArticle = (author, title, body, topic) => {
+  return db
+    .query(
+      `INSERT INTO articles 
+      (author, title, body, topic ) 
+      VALUES ( $1, $2, $3, $4)
+      RETURNING *;`,
+      [author, title, body, topic] 
+    )
+    .then((result) => {
+      // take article_id from article returned
+      const newArticleId = result.rows[0]["article_id"]
+      console.log(result)
+
+      // return article with comment count
+      return exports.selectArticleById(newArticleId);
+    });
+};
+
 // PATCH MODELS
 
-exports.updateArticleById = (req) => {
-  const { article_id } = req.params;
-  const { inc_votes } = req.body;
+exports.updateArticleById = (article_id, inc_votes) => {
   return db
     .query(
       `UPDATE articles 

@@ -1,8 +1,6 @@
 const db = require("../db/connection.js");
 
-exports.deleteCommentById = (req) => {
-  const { comment_id } = req.params;
-
+exports.deleteCommentById = (comment_id) => {
   return db
     .query("SELECT * FROM comments WHERE comments.comment_id = $1;", [
       comment_id,
@@ -25,3 +23,16 @@ exports.deleteCommentById = (req) => {
 };
 
 
+exports.updateCommentById = (comment_id, inc_votes) => {
+  return db
+    .query(
+      `UPDATE comments 
+    SET votes = votes + $1
+    WHERE comment_id = $2
+    RETURNING *;`,
+      [inc_votes, comment_id]
+    )
+    .then((result) => {
+        return result.rows[0];
+    });
+};
