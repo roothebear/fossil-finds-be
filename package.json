@@ -2,12 +2,14 @@
   "name": "be-nc-news",
   "version": "1.0.0",
   "description": "bc-nc-news",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "seed:prod": "NODE_ENV=production DATABASE_URL=$(heroku config:get DATABASE_URL) npm run seed",
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -37,5 +39,9 @@
     "setupFilesAfterEnv": [
       "jest-extended/all"
     ]
+  },
+  "engines": {
+    "node": "17.5.0",
+    "npm": "8.4.1"
   }
 }

@@ -2,6 +2,7 @@ const request = require("supertest");
 const { toBeSorted } = require("jest-sorted");
 const app = require("../app.js");
 const db = require("../db/connection.js");
+const endpointsJson = require("../endpoints.json");
 
 // set up database with test data
 const seed = require("../db/seeds/seed.js");
@@ -13,23 +14,33 @@ afterAll(() => {
   if (db.end) db.end();
 });
 
-describe("/api", () => {
+describe("/API", () => {
   // GET testing
-  describe("GET /api", () => {
-    test("status: 200 - responds with all ok message", () => {
+  describe("GET /api/", () => {
+    test("status: 200 - responds with endpoints.JSON", () => {
       return request(app)
         .get("/api")
         .expect(200)
         .then((response) => {
-          expect(response.body).toEqual({ msg: "all ok" });
+          expect(response.body).toEqual(endpointsJson);
         });
+    });
+    describe("Error handling", () => {
+      test("status: 404 - responds with err msg for a wrong path", () => {
+        return request(app)
+          .get("/incorrectpath")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("path not found");
+          });
+      });
     });
   });
 });
 
 // TOPICS
 
-describe("/api/topics", () => {
+describe("/API/TOPICS", () => {
   // GET testing
   describe("GET /api/topics", () => {
     test("status: 200 - responds with topic object", () => {
@@ -57,7 +68,7 @@ describe("/api/topics", () => {
 
 // ARTICLES
 
-describe("/api/articles", () => {
+describe("/API/ARTICLES", () => {
   // GET testing
   describe("GET /api/articles", () => {
     test("status: 200 - responds with article object", () => {
@@ -137,15 +148,6 @@ describe("/api/articles", () => {
           expect(response.body.articles).toEqual([]);
         });
     });
-    // test for topic existence when empty array
-    test("status: 404 - responds with err msg when topic does not exist in database", () => {
-      return request(app)
-        .get("/api/articles?topic=bluepeter")
-        .expect(404)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("Topic not found");
-        });
-    });
     // sort_by query
     test("status: 200 - responds with article object with elements sorted by sort_by query", () => {
       return request(app)
@@ -156,16 +158,7 @@ describe("/api/articles", () => {
           let titles = response.body.articles.map((article) => {
             return article.title;
           });
-          console.log(titles);
           expect(titles).toBeSorted({ ascending: true });
-        });
-    });
-    test("status: 400 - responds with err msg for invalid sort_by query", () => {
-      return request(app)
-        .get("/api/articles?sort_by=nonexistentcolumn")
-        .expect(400)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("Error - Invalid sort_by query");
         });
     });
     // order query
@@ -181,13 +174,32 @@ describe("/api/articles", () => {
           expect(dateCreated).toBeSorted({ descending: true });
         });
     });
-    test("status: 400 - responds with err msg for invalid order query", () => {
-      return request(app)
-        .get("/api/articles?order=nonsense")
-        .expect(400)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("Error - Invalid order query");
-        });
+    describe("Error handling", () => {
+      // test for topic existence when empty array
+      test("status: 404 - responds with err msg when topic does not exist in database", () => {
+        return request(app)
+          .get("/api/articles?topic=bluepeter")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Topic not found");
+          });
+      });
+      test("status: 400 - responds with err msg for invalid sort_by query", () => {
+        return request(app)
+          .get("/api/articles?sort_by=nonexistentcolumn")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Error - Invalid sort_by query");
+          });
+      });
+      test("status: 400 - responds with err msg for invalid order query", () => {
+        return request(app)
+          .get("/api/articles?order=nonsense")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Error - Invalid order query");
+          });
+      });
     });
   });
 
@@ -233,13 +245,23 @@ describe("/api/articles", () => {
           });
         });
     });
-    test("status: 404 - responds with err msg for valid but non-existent article_id", () => {
-      return request(app)
-        .get("/api/articles/99")
-        .expect(404)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("no article with this id exists");
-        });
+    describe("Error handling", () => {
+      test("status: 404 - responds with not found for valid but non-existent article_id", () => {
+        return request(app)
+          .get("/api/articles/99")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("no article with this id exists");
+          });
+      });
+      test("status: 400 - responds with bad request for invalid article_id", () => {
+        return request(app)
+          .get("/api/articles/invalidId")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - invalid input");
+          });
+      });
     });
   });
 
@@ -275,6 +297,7 @@ describe("/api/articles", () => {
           expect(response.body.comments).toEqual([]);
         });
     });
+    describe("Error handling", () => {});
   });
 
   // POST testing
@@ -295,14 +318,16 @@ describe("/api/articles", () => {
           });
         });
     });
-    test("status: 400 - error for invalid username (not in user table)", () => {
-      return request(app)
-        .post("/api/articles/2/comments")
-        .send({ username: "invalidusername", body: 'Hello' })
-        .expect(400)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("error - invalid input");
-        });
+    describe("Error handling", () => {
+      test("status: 400 - error for invalid username (not in user table)", () => {
+        return request(app)
+          .post("/api/articles/2/comments")
+          .send({ username: "invalidusername", body: "Hello" })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - invalid input");
+          });
+      });
     });
   });
 
@@ -329,63 +354,79 @@ describe("/api/articles", () => {
           });
         });
     });
-    test("status:400, no inc_votes on request body", () => {
-      const articleUpdate = {
-        irrelevant_key: "something irrelevant",
-      };
-      return request(app)
-        .patch("/api/articles/2")
-        .send(articleUpdate)
-        .expect(400)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("error - null value given");
-        });
-    });
-    test("status:404 invalid inc_votes provided (string)", () => {
-      const articleUpdate = {
-        inc_votes: "a string",
-      };
-      return request(app)
-        .patch("/api/articles/3")
-        .send(articleUpdate)
-        .expect(400)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("error - invalid input");
-        });
-    });
-    test("status:404 invalid inc_votes provided (boolean)", () => {
-      const articleUpdate = {
-        inc_votes: false,
-      };
-      return request(app)
-        .patch("/api/articles/3")
-        .send(articleUpdate)
-        .expect(400)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("error - invalid input");
-        });
+    describe("Error handling", () => {
+      test("status:400, no inc_votes on request body", () => {
+        const articleUpdate = {
+          irrelevant_key: "something irrelevant",
+        };
+        return request(app)
+          .patch("/api/articles/2")
+          .send(articleUpdate)
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - null value given");
+          });
+      });
+      test("status:404 invalid inc_votes provided (string)", () => {
+        const articleUpdate = {
+          inc_votes: "a string",
+        };
+        return request(app)
+          .patch("/api/articles/3")
+          .send(articleUpdate)
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - invalid input");
+          });
+      });
+      test("status:404 invalid inc_votes provided (boolean)", () => {
+        const articleUpdate = {
+          inc_votes: false,
+        };
+        return request(app)
+          .patch("/api/articles/3")
+          .send(articleUpdate)
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - invalid input");
+          });
+      });
     });
   });
 });
 
 // COMMENTS
 
-describe("/api/comments", () => {
+describe("/API/COMMENTS", () => {
   // DELETE testing
   describe("DELETE /api/comments/:comment_id", () => {
     test("status: 204 comment is deleted", () => {
-      return request(app)
-        .delete("/api/comments/1")
-        .expect(204)
+      return request(app).delete("/api/comments/1").expect(204);
+    });
+    describe("Error handling", () => {
+      test("400 - responds with bad request for invalid comment id", () => {
+        return request(app)
+          .delete("/api/comments/invalidId")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - invalid input");
+          });
+      });
+      test("404 - responds with not found for valid but non-existent comment id", () => {
+        return request(app)
+          .delete("/api/comments/99")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("no comment with this id exists");
+          });
+      });
     });
   });
 });
 
-
-
 // USERS
 
-describe("/api/users", () => {
+describe("/API/USERS", () => {
   // GET testing
   describe("GET /api/users", () => {
     test("status: 200 - responds with user object", () => {
@@ -414,13 +455,15 @@ describe("/api/users", () => {
 
 // GENERAL
 
-describe("Server - paths not found", () => {
-  test("status: 404 - responds with path not found msg for incorrect path", () => {
-    return request(app)
-      .get("/api/not-an-endpoint")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("path not found");
-      });
+describe("PATH NOT FOUND", () => {
+  describe("Error handling", () => {
+    test("status: 404 - responds with path not found msg for incorrect path", () => {
+      return request(app)
+        .get("/api/not-an-endpoint")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("path not found");
+        });
+    });
   });
 });
