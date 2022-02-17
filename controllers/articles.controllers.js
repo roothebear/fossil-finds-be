@@ -84,7 +84,6 @@ exports.removeArticleById = (req, res, next) => {
       res.sendStatus(204);
     })
     .catch((err) => {
-      console.log(err)
       next(err);
     });
 };
