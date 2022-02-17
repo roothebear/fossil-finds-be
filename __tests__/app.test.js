@@ -64,6 +64,37 @@ describe("/API/TOPICS", () => {
         });
     });
   });
+  // POST testing
+  describe("POST /api/topics", () => {
+    test("status: 201 - responds with article added", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({
+          slug: "new topic",
+          description: "new topic description",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.topic).toEqual({
+            slug: "new topic",
+            description: "new topic description",
+          });
+        });
+    });
+    describe("Error handling", () => {
+      test("status: 400 - error for invalid inputs (missing property)", () => {
+        return request(app)
+          .post("/api/topics")
+          .send({
+            description: "new topic description",
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - null value given");
+          });
+      });
+    });
+  });
 });
 
 // ARTICLES
@@ -71,16 +102,17 @@ describe("/API/TOPICS", () => {
 describe("/API/ARTICLES", () => {
   // GET testing
   describe("GET /api/articles", () => {
-    test("status: 200 - responds with article object", () => {
+    test("status: 200 - responds with article object of default length 10 when no limit specified", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
         .then((response) => {
           // check that response object has a single key of articles
-          expect(Object.keys(response.body)).toHaveLength(1);
+          expect(Object.keys(response.body)).toHaveLength(2);
           expect(Object.keys(response.body)[0]).toEqual("articles");
+          expect(Object.keys(response.body)[1]).toEqual("totalCount");
           // check that array of article objects is the expected length
-          expect(response.body.articles).toHaveLength(12);
+          expect(response.body.articles).toHaveLength(10);
           response.body.articles.forEach((article) => {
             expect(article).toEqual(
               expect.objectContaining({
@@ -114,11 +146,9 @@ describe("/API/ARTICLES", () => {
             4: 0,
             5: 2,
             6: 1,
-            7: 0,
             8: 0,
             9: 2,
             10: 0,
-            11: 0,
             12: 0,
           });
         });
@@ -130,7 +160,7 @@ describe("/API/ARTICLES", () => {
         .expect(200)
         .then((response) => {
           // check that array of article objects is the expected length
-          expect(response.body.articles).toHaveLength(11);
+          expect(response.body.articles).toHaveLength(10);
           response.body.articles.forEach((article) => {
             expect(article).toEqual(
               expect.objectContaining({
@@ -167,11 +197,45 @@ describe("/API/ARTICLES", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
-          // check that array of treasure objects is in descending order by age
+          // check that array of article objects is in descending order by age
           let dateCreated = response.body.articles.map((article) => {
             return article["created_at"];
           });
           expect(dateCreated).toBeSorted({ descending: true });
+        });
+    });
+    // limit and offset queries
+    test("status: 200 - responds with first 15 articles when limit and offset specified", () => {
+      return request(app)
+        .get("/api/articles?limit=7")
+        .expect(200)
+        .then((response) => {
+          // check that array of article objects is in descending order by age
+          let dateCreated = response.body.articles.map((article) => {
+            return article["created_at"];
+          });
+          expect(dateCreated).toBeSorted({ descending: true });
+          return response;
+        })
+        .then((response) => {
+          // check that response object has a single key of articles
+          expect(Object.keys(response.body)).toHaveLength(2);
+          expect(Object.keys(response.body)[0]).toEqual("articles");
+          // check that array of article objects is the expected length
+          expect(response.body.articles).toHaveLength(7);
+          response.body.articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                article_id: expect.any(Number),
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+              })
+            );
+          });
         });
     });
     describe("Error handling", () => {
@@ -189,7 +253,7 @@ describe("/API/ARTICLES", () => {
           .get("/api/articles?sort_by=nonexistentcolumn")
           .expect(400)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Error - Invalid sort_by query");
+            expect(msg).toBe("Error - Invalid sort_by or order query");
           });
       });
       test("status: 400 - responds with err msg for invalid order query", () => {
@@ -197,7 +261,15 @@ describe("/API/ARTICLES", () => {
           .get("/api/articles?order=nonsense")
           .expect(400)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Error - Invalid order query");
+            expect(msg).toBe("Error - Invalid sort_by or order query");
+          });
+      });
+      test("status: 400 - responds with err msg for invalid limit query", () => {
+        return request(app)
+          .get("/api/articles?limit=nonsense")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - invalid input");
           });
       });
     });
@@ -272,10 +344,11 @@ describe("/API/ARTICLES", () => {
         .expect(200)
         .then((response) => {
           // check that response object has a single key of comments
-          expect(Object.keys(response.body)).toHaveLength(1);
+          expect(Object.keys(response.body)).toHaveLength(2);
           expect(Object.keys(response.body)[0]).toEqual("comments");
+          expect(Object.keys(response.body)[1]).toEqual("commentCount");
           // check that array of comment objects is the expected length
-          expect(response.body.comments).toHaveLength(11);
+          expect(response.body.comments).toHaveLength(10);
           response.body.comments.forEach((comment) => {
             expect(comment).toEqual(
               expect.objectContaining({
@@ -289,6 +362,15 @@ describe("/API/ARTICLES", () => {
           });
         });
     });
+    test("status: 200 - responds with comments object of correct length with limit query", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5")
+        .expect(200)
+        .then((response) => {
+          // check that array of comment objects is the expected length
+          expect(response.body.comments).toHaveLength(5);
+        });
+    });
     test("status: 200 - responds with empty array when no comments exist for article", () => {
       return request(app)
         .get("/api/articles/2/comments")
@@ -297,7 +379,16 @@ describe("/API/ARTICLES", () => {
           expect(response.body.comments).toEqual([]);
         });
     });
-    describe("Error handling", () => {});
+    describe("Error handling", () => {
+      test("status: 400 - responds with err msg for invalid limit query", () => {
+        return request(app)
+          .get("/api/articles/1/comments?limit=nonsense")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - invalid input");
+          });
+      });
+    });
   });
 
   // POST testing
@@ -430,6 +521,31 @@ describe("/API/ARTICLES", () => {
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("error - invalid input");
+          });
+      });
+    });
+  });
+
+  // DELETE testing
+  describe("DELETE /api/articles/:article_id", () => {
+    test("status: 204 comment is deleted", () => {
+      return request(app).delete("/api/articles/2").expect(204);
+    });
+    describe("Error handling", () => {
+      test("400 - responds with bad request for invalid article id", () => {
+        return request(app)
+          .delete("/api/articles/invalidId")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - invalid input");
+          });
+      });
+      test("404 - responds with not found for valid but non-existent article id", () => {
+        return request(app)
+          .delete("/api/articles/99")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("no article with this id exists");
           });
       });
     });
