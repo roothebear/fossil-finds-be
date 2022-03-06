@@ -23,14 +23,14 @@ exports.deleteCommentById = (comment_id) => {
 };
 
 
-exports.updateCommentById = (comment_id, inc_votes) => {
+exports.updateCommentById = (comment_id, inc_likes) => {
   return db
     .query(
       `UPDATE comments 
-    SET votes = votes + $1
+    SET likes = likes + $1
     WHERE comment_id = $2
     RETURNING *;`,
-      [inc_votes, comment_id]
+      [inc_likes, comment_id]
     )
     .then((result) => {
         return result.rows[0];

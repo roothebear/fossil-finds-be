@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS nc_news_test;
-DROP DATABASE IF EXISTS nc_news;
+DROP DATABASE IF EXISTS fossil_finds_test;
+DROP DATABASE IF EXISTS fossil_finds;
 
-CREATE DATABASE nc_news_test;
-CREATE DATABASE nc_news;
+CREATE DATABASE fossil_finds_test;
+CREATE DATABASE fossil_finds;

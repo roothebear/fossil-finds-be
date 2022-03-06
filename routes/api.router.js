@@ -1,15 +1,18 @@
 const apiRouter = require("express").Router();
-const articlesRouter = require("./articles.router.js");
-const topicsRouter = require("./topics.router.js");
+const findsRouter = require("./finds.router.js");
+const typesRouter = require("./types.router.js");
+const locationsRouter = require("./locations.router.js");
 const commentsRouter = require("./comments.router.js");
 const usersRouter = require("./users.router.js");
 const { getApiJson } = require("../controllers/api.controllers.js");
 
 apiRouter.route("/").get(getApiJson);
 
-apiRouter.use("/articles", articlesRouter);
+apiRouter.use("/finds", findsRouter);
 
-apiRouter.use("/topics", topicsRouter);
+apiRouter.use("/types", typesRouter);
+
+apiRouter.use("/locations", locationsRouter);
 
 apiRouter.use("/comments", commentsRouter);
 

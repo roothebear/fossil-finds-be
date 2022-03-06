@@ -7,16 +7,30 @@ const {
 const db = require("../connection");
 const { dropTables, createTables } = require("../helpers/manage-tables");
 
-const seed = async ({ topicData, userData, articleData, commentData }) => {
+const seed = async ({
+  typeData,
+  locationData,
+  userData,
+  findData,
+  commentData,
+}) => {
   await dropTables();
   await createTables();
 
-  const insertTopicsQueryStr = format(
-    "INSERT INTO topics (slug, description) VALUES %L RETURNING *;",
-    topicData.map(({ slug, description }) => [slug, description])
+  const insertTypesQueryStr = format(
+    "INSERT INTO types (slug, description) VALUES %L RETURNING *;",
+    typeData.map(({ slug, description }) => [slug, description])
   );
-  const topicsPromise = db
-    .query(insertTopicsQueryStr)
+  const typesPromise = db
+    .query(insertTypesQueryStr)
+    .then((result) => result.rows);
+
+  const insertLocationsQueryStr = format(
+    "INSERT INTO locations (settlement, county) VALUES %L RETURNING *;",
+    locationData.map(({ settlement, county }) => [settlement, county])
+  );
+  const locationsPromise = db
+    .query(insertLocationsQueryStr)
     .then((result) => result.rows);
 
   const insertUsersQueryStr = format(
@@ -31,38 +45,53 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
     .query(insertUsersQueryStr)
     .then((result) => result.rows);
 
-  await Promise.all([topicsPromise, usersPromise]);
+  await Promise.all([typesPromise, locationsPromise, usersPromise]);
 
-  const formattedArticleData = articleData.map(convertTimestampToDate);
-  const insertArticlesQueryStr = format(
-    "INSERT INTO articles (title, topic, author, body, created_at, votes) VALUES %L RETURNING *;",
-    formattedArticleData.map(
-      ({ title, topic, author, body, created_at, votes = 0 }) => [
+  const formattedFindData = findData.map(convertTimestampToDate);
+  const insertFindsQueryStr = format(
+    "INSERT INTO finds (title, type, author, body, img_url, location_id, latitude, longitude, created_at, likes) VALUES %L RETURNING *;",
+    formattedFindData.map(
+      ({
         title,
-        topic,
+        type,
         author,
         body,
+        img_url,
+        location_id,
+        latitude,
+        longitude,
         created_at,
-        votes,
+        likes = 0,
+      }) => [
+        title,
+        type,
+        author,
+        body,
+        img_url,
+        location_id,
+        latitude,
+        longitude,
+        created_at,
+        likes,
       ]
     )
   );
 
-  const articleRows = await db
-    .query(insertArticlesQueryStr)
+  const findRows = await db
+    .query(insertFindsQueryStr)
     .then((result) => result.rows);
 
-  const articleIdLookup = createRef(articleRows, "title", "article_id");
-  const formattedCommentData = formatComments(commentData, articleIdLookup);
+  const findIdLookup = createRef(findRows, "title", "find_id");
+  const formattedCommentData = formatComments(commentData, findIdLookup);
 
   const insertCommentsQueryStr = format(
-    "INSERT INTO comments (body, author, article_id, votes, created_at) VALUES %L RETURNING *;",
+    "INSERT INTO comments (body, author, find_id, likes, created_at) VALUES %L RETURNING *;",
     formattedCommentData.map(
-      ({ body, author, article_id, votes = 0, created_at }) => [
+      ({ body, author, find_id, likes = 0, created_at }) => [
         body,
         author,
-        article_id,
-        votes,
+        find_id,
+        likes,
         created_at,
       ]
     )

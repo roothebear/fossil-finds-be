@@ -1,13 +1,13 @@
 const db = require("../db/connection.js");
 
-exports.selectTopics = (req) => {
-  return db.query(`SELECT * FROM topics;`).then((result) => result.rows);
+exports.selectTypes = (req) => {
+  return db.query(`SELECT * FROM types;`).then((result) => result.rows);
 };
 
-exports.insertTopic = (slug, description) => {
+exports.insertType = (slug, description) => {
   return db
     .query(
-      `INSERT INTO topics 
+      `INSERT INTO types 
       (description, slug) 
       VALUES ($1, $2)
       RETURNING *;`,

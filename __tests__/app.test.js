@@ -38,23 +38,23 @@ describe("/API", () => {
   });
 });
 
-// TOPICS
+// TYPES
 
-describe("/API/TOPICS", () => {
+describe("/API/TYPES", () => {
   // GET testing
-  describe("GET /api/topics", () => {
-    test("status: 200 - responds with topic object", () => {
+  describe("GET /api/types", () => {
+    test("status: 200 - responds with type object", () => {
       return request(app)
-        .get("/api/topics")
+        .get("/api/types")
         .expect(200)
         .then((response) => {
-          // check that response object has a single key of topics
+          // check that response object has a single key of types
           expect(Object.keys(response.body)).toHaveLength(1);
-          expect(Object.keys(response.body)[0]).toEqual("topics");
-          // check that array of topic objects is the expected length
-          expect(response.body.topics).toHaveLength(3);
-          response.body.topics.forEach((topics) => {
-            expect(topics).toEqual(
+          expect(Object.keys(response.body)[0]).toEqual("types");
+          // check that array of type objects is the expected length
+          expect(response.body.types).toHaveLength(4);
+          response.body.types.forEach((types) => {
+            expect(types).toEqual(
               expect.objectContaining({
                 description: expect.any(String),
                 slug: expect.any(String),
@@ -65,28 +65,28 @@ describe("/API/TOPICS", () => {
     });
   });
   // POST testing
-  describe("POST /api/topics", () => {
-    test("status: 201 - responds with article added", () => {
+  describe("POST /api/types", () => {
+    test("status: 201 - responds with find added", () => {
       return request(app)
-        .post("/api/topics")
+        .post("/api/types")
         .send({
-          slug: "new topic",
-          description: "new topic description",
+          slug: "new type",
+          description: "new type description",
         })
         .expect(201)
         .then(({ body }) => {
-          expect(body.topic).toEqual({
-            slug: "new topic",
-            description: "new topic description",
+          expect(body.type).toEqual({
+            slug: "new type",
+            description: "new type description",
           });
         });
     });
     describe("Error handling", () => {
       test("status: 400 - error for invalid inputs (missing property)", () => {
         return request(app)
-          .post("/api/topics")
+          .post("/api/types")
           .send({
-            description: "new topic description",
+            description: "new type description",
           })
           .expect(400)
           .then(({ body: { msg } }) => {
@@ -97,160 +97,229 @@ describe("/API/TOPICS", () => {
   });
 });
 
-// ARTICLES
+// LOCATIONS
 
-describe("/API/ARTICLES", () => {
+describe("/API/LOCATIONS", () => {
   // GET testing
-  describe("GET /api/articles", () => {
-    test("status: 200 - responds with article object of default length 10 when no limit specified", () => {
+  describe("GET /api/locations", () => {
+    test("status: 200 - responds with location object", () => {
       return request(app)
-        .get("/api/articles")
+        .get("/api/locations")
         .expect(200)
         .then((response) => {
-          // check that response object has a single key of articles
-          expect(Object.keys(response.body)).toHaveLength(2);
-          expect(Object.keys(response.body)[0]).toEqual("articles");
-          expect(Object.keys(response.body)[1]).toEqual("totalCount");
-          // check that array of article objects is the expected length
-          expect(response.body.articles).toHaveLength(10);
-          response.body.articles.forEach((article) => {
-            expect(article).toEqual(
+          // check that response object has a single key of locations
+          expect(Object.keys(response.body)).toHaveLength(1);
+          expect(Object.keys(response.body)[0]).toEqual("locations");
+          // check that array of location objects is the expected length
+          expect(response.body.locations).toHaveLength(3);
+          response.body.locations.forEach((locations) => {
+            expect(locations).toEqual(
               expect.objectContaining({
-                article_id: expect.any(Number),
+                location_id: expect.any(Number),
+                settlement: expect.any(String),
+                county: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+  });
+  // POST testing
+  describe("POST /api/locations", () => {
+    test("status: 201 - responds with location added", () => {
+      return request(app)
+        .post("/api/locations")
+        .send({
+          settlement: "new settlement",
+          county: "new county",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.location).toEqual({
+            location_id: expect.any(Number),
+            settlement: "new settlement",
+            county: "new county",
+          });
+        });
+    });
+    describe("Error handling", () => {
+      test("status: 400 - error for invalid inputs (missing property)", () => {
+        return request(app)
+          .post("/api/locations")
+          .send({
+            settlement: "new settlement",
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("error - null value given");
+          });
+      });
+    });
+  });
+});
+
+// FINDS
+
+describe("/API/FINDS", () => {
+  // GET testing
+  describe("GET /api/finds", () => {
+    test("status: 200 - responds with find object of default length 10 when no limit specified", () => {
+      return request(app)
+        .get("/api/finds")
+        .expect(200)
+        .then((response) => {
+          // check that response object has a single key of finds
+          expect(Object.keys(response.body)).toHaveLength(2);
+          expect(Object.keys(response.body)[0]).toEqual("finds");
+          expect(Object.keys(response.body)[1]).toEqual("totalCount");
+          // check that array of find objects is the expected length
+          expect(response.body.finds).toHaveLength(10);
+          response.body.finds.forEach((find) => {
+            expect(find).toEqual(
+              expect.objectContaining({
+                find_id: expect.any(Number),
                 title: expect.any(String),
-                topic: expect.any(String),
+                type: expect.any(String),
                 author: expect.any(String),
                 body: expect.any(String),
+                img_url: expect.any(String),
+                latitude: expect.any(Number),
+                longitude: expect.any(Number),
                 created_at: expect.any(String),
-                votes: expect.any(Number),
+                likes: expect.any(Number),
               })
             );
           });
         });
     });
     // comment counts
-    test("status: 200 - articles include comment_count", () => {
+    test("status: 200 - finds include comment_count", () => {
       return request(app)
-        .get("/api/articles")
+        .get("/api/finds?limit=12")
         .expect(200)
         .then((response) => {
-          // make reference object for article comment counts
+          // make reference object for find comment counts
           let commentCountArray = {};
-          response.body.articles.forEach((article) => {
-            commentCountArray[article["article_id"]] = article["comment_count"];
+          response.body.finds.forEach((find) => {
+            commentCountArray[find["find_id"]] = find["comment_count"];
           });
           expect(commentCountArray).toEqual({
-            1: 11,
+            1: 8,
             2: 0,
-            3: 2,
+            3: 0,
             4: 0,
-            5: 2,
-            6: 1,
+            5: 0,
+            6: 0,
+            7: 0,
             8: 0,
-            9: 2,
+            9: 0,
             10: 0,
+            11: 0,
             12: 0,
           });
         });
     });
-    // filtering by topic
-    test("status: 200 - responds with articles with articles filtered by topic (topic exists)", () => {
+    // filtering by type
+    test("status: 200 - responds with finds with finds filtered by type (type exists)", () => {
       return request(app)
-        .get("/api/articles?topic=mitch")
+        .get("/api/finds?type=type_a")
         .expect(200)
         .then((response) => {
-          // check that array of article objects is the expected length
-          expect(response.body.articles).toHaveLength(10);
-          response.body.articles.forEach((article) => {
-            expect(article).toEqual(
+          // check that array of find objects is the expected length
+          expect(response.body.finds).toHaveLength(10);
+          response.body.finds.forEach((find) => {
+            expect(find).toEqual(
               expect.objectContaining({
-                topic: "mitch",
+                type: "type_a",
               })
             );
           });
         });
     });
-    test("status: 200 - responds with empty array when topic exists but there are no matching articles", () => {
+    test("status: 200 - responds with empty array when type exists but there are no matching finds", () => {
       return request(app)
-        .get("/api/articles?topic=paper")
+        .get("/api/finds?type=type_c")
         .expect(200)
         .then((response) => {
-          expect(response.body.articles).toEqual([]);
+          expect(response.body.finds).toEqual([]);
         });
     });
     // sort_by query
-    test("status: 200 - responds with article object with elements sorted by sort_by query", () => {
+    test("status: 200 - responds with find object with elements sorted by sort_by query", () => {
       return request(app)
-        .get("/api/articles?sort_by=title&order=asc")
+        .get("/api/finds?sort_by=title&order=asc")
         .expect(200)
         .then((response) => {
-          // check that array of article objects is in descending order by title
-          let titles = response.body.articles.map((article) => {
-            return article.title;
+          // check that array of find objects is in descending order by title
+          let titles = response.body.finds.map((find) => {
+            return find.title;
           });
           expect(titles).toBeSorted({ ascending: true });
         });
     });
     // order query
-    test("status: 200 - responds with article object ordered by date created descending", () => {
+    test("status: 200 - responds with find object ordered by date created descending", () => {
       return request(app)
-        .get("/api/articles")
+        .get("/api/finds")
         .expect(200)
         .then((response) => {
-          // check that array of article objects is in descending order by age
-          let dateCreated = response.body.articles.map((article) => {
-            return article["created_at"];
+          // check that array of find objects is in descending order by age
+          let dateCreated = response.body.finds.map((find) => {
+            return find["created_at"];
           });
           expect(dateCreated).toBeSorted({ descending: true });
         });
     });
     // limit and offset queries
-    test("status: 200 - responds with first 15 articles when limit and offset specified", () => {
+    test("status: 200 - responds with first 15 finds when limit and offset specified", () => {
       return request(app)
-        .get("/api/articles?limit=7")
+        .get("/api/finds?limit=7")
         .expect(200)
         .then((response) => {
-          // check that array of article objects is in descending order by age
-          let dateCreated = response.body.articles.map((article) => {
-            return article["created_at"];
+          // check that array of find objects is in descending order by age
+          let dateCreated = response.body.finds.map((find) => {
+            return find["created_at"];
           });
           expect(dateCreated).toBeSorted({ descending: true });
           return response;
         })
         .then((response) => {
-          // check that response object has a single key of articles
+          // check that response object has a single key of finds
           expect(Object.keys(response.body)).toHaveLength(2);
-          expect(Object.keys(response.body)[0]).toEqual("articles");
-          // check that array of article objects is the expected length
-          expect(response.body.articles).toHaveLength(7);
-          response.body.articles.forEach((article) => {
-            expect(article).toEqual(
+          expect(Object.keys(response.body)[0]).toEqual("finds");
+          // check that array of find objects is the expected length
+          expect(response.body.finds).toHaveLength(7);
+          response.body.finds.forEach((find) => {
+            expect(find).toEqual(
               expect.objectContaining({
-                article_id: expect.any(Number),
+                find_id: expect.any(Number),
                 title: expect.any(String),
-                topic: expect.any(String),
+                type: expect.any(String),
                 author: expect.any(String),
                 body: expect.any(String),
+                img_url: expect.any(String),
+                latitude: expect.any(Number),
+                longitude: expect.any(Number),
                 created_at: expect.any(String),
-                votes: expect.any(Number),
+                likes: expect.any(Number),
               })
             );
           });
         });
     });
     describe("Error handling", () => {
-      // test for topic existence when empty array
-      test("status: 404 - responds with err msg when topic does not exist in database", () => {
+      // test for type existence when empty array
+      test("status: 404 - responds with err msg when type does not exist in database", () => {
         return request(app)
-          .get("/api/articles?topic=bluepeter")
+          .get("/api/finds?type=bluepeter")
           .expect(404)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Topic not found");
+            expect(msg).toBe("type not found");
           });
       });
       test("status: 400 - responds with err msg for invalid sort_by query", () => {
         return request(app)
-          .get("/api/articles?sort_by=nonexistentcolumn")
+          .get("/api/finds?sort_by=nonexistentcolumn")
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("Error - Invalid sort_by or order query");
@@ -258,7 +327,7 @@ describe("/API/ARTICLES", () => {
       });
       test("status: 400 - responds with err msg for invalid order query", () => {
         return request(app)
-          .get("/api/articles?order=nonsense")
+          .get("/api/finds?order=nonsense")
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("Error - Invalid sort_by or order query");
@@ -266,7 +335,7 @@ describe("/API/ARTICLES", () => {
       });
       test("status: 400 - responds with err msg for invalid limit query", () => {
         return request(app)
-          .get("/api/articles?limit=nonsense")
+          .get("/api/finds?limit=nonsense")
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("error - invalid input");
@@ -275,60 +344,67 @@ describe("/API/ARTICLES", () => {
     });
   });
 
-  describe("GET /api/articles/:article_id", () => {
-    test("status: 200 - responds with article", () => {
+  describe("GET /api/finds/:find_id", () => {
+    test("status: 200 - responds with find", () => {
       return request(app)
-        .get("/api/articles/1")
+        .get("/api/finds/1")
         .expect(200)
         .then((response) => {
-          // check that response object has a single key of articles/1
+          // check that response object has a single key of finds/1
           expect(Object.keys(response.body)).toHaveLength(1);
-          expect(Object.keys(response.body)[0]).toEqual("article");
-          expect(response.body.article).toEqual(
+          expect(Object.keys(response.body)[0]).toEqual("find");
+          expect(response.body.find).toEqual(
             expect.objectContaining({
-              article_id: expect.any(Number),
+              find_id: expect.any(Number),
               title: expect.any(String),
-              topic: expect.any(String),
+              type: expect.any(String),
               author: expect.any(String),
               body: expect.any(String),
+              img_url: expect.any(String),
+              latitude: expect.any(Number),
+              longitude: expect.any(Number),
               created_at: expect.any(String),
-              votes: expect.any(Number),
+              likes: expect.any(Number),
             })
           );
         });
     });
-    test("status: 200 - responds with article including comment_count", () => {
+    test("status: 200 - responds with find including comment_count", () => {
       return request(app)
-        .get("/api/articles/1")
+        .get("/api/finds/1")
         .expect(200)
         .then((response) => {
-          // check that response object has a single key of articles/1
+          // check that response object has a single key of finds/1
           expect(Object.keys(response.body)).toHaveLength(1);
-          expect(Object.keys(response.body)[0]).toEqual("article");
-          expect(response.body.article).toEqual({
-            article_id: 1,
-            title: "Living in the shadow of a great man",
-            topic: "mitch",
-            author: "butter_bridge",
-            body: "I find this existence challenging",
+          expect(Object.keys(response.body)[0]).toEqual("find");
+          expect(response.body.find).toEqual({
+            find_id: 1,
+            title: "title_a",
+            type: "type_a",
+            author: "username_a",
+            body: "body_a",
+            location_id: expect.any(Number),
+            img_url: expect.any(String),
+            latitude: expect.any(Number),
+            longitude: expect.any(Number),
             created_at: "2020-07-09T20:11:00.000Z",
-            votes: 100,
-            comment_count: 11,
+            likes: 12,
+            comment_count: 8,
           });
         });
     });
     describe("Error handling", () => {
-      test("status: 404 - responds with not found for valid but non-existent article_id", () => {
+      test("status: 404 - responds with not found for valid but non-existent find_id", () => {
         return request(app)
-          .get("/api/articles/99")
+          .get("/api/finds/99")
           .expect(404)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("no article with this id exists");
+            expect(msg).toBe("no find with this id exists");
           });
       });
-      test("status: 400 - responds with bad request for invalid article_id", () => {
+      test("status: 400 - responds with bad request for invalid find_id", () => {
         return request(app)
-          .get("/api/articles/invalidId")
+          .get("/api/finds/invalidId")
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("error - invalid input");
@@ -337,10 +413,10 @@ describe("/API/ARTICLES", () => {
     });
   });
 
-  describe("GET /api/articles/:article_id/comments", () => {
+  describe("GET /api/finds/:find_id/comments", () => {
     test("status: 200 - responds with comments object", () => {
       return request(app)
-        .get("/api/articles/1/comments")
+        .get("/api/finds/1/comments")
         .expect(200)
         .then((response) => {
           // check that response object has a single key of comments
@@ -348,12 +424,12 @@ describe("/API/ARTICLES", () => {
           expect(Object.keys(response.body)[0]).toEqual("comments");
           expect(Object.keys(response.body)[1]).toEqual("commentCount");
           // check that array of comment objects is the expected length
-          expect(response.body.comments).toHaveLength(10);
+          expect(response.body.comments).toHaveLength(8);
           response.body.comments.forEach((comment) => {
             expect(comment).toEqual(
               expect.objectContaining({
                 comment_id: expect.any(Number),
-                votes: expect.any(Number),
+                likes: expect.any(Number),
                 author: expect.any(String),
                 body: expect.any(String),
                 created_at: expect.any(String),
@@ -364,16 +440,16 @@ describe("/API/ARTICLES", () => {
     });
     test("status: 200 - responds with comments object of correct length with limit query", () => {
       return request(app)
-        .get("/api/articles/1/comments?limit=5")
+        .get("/api/finds/1/comments?limit=5")
         .expect(200)
         .then((response) => {
           // check that array of comment objects is the expected length
           expect(response.body.comments).toHaveLength(5);
         });
     });
-    test("status: 200 - responds with empty array when no comments exist for article", () => {
+    test("status: 200 - responds with empty array when no comments exist for find", () => {
       return request(app)
-        .get("/api/articles/2/comments")
+        .get("/api/finds/2/comments")
         .expect(200)
         .then((response) => {
           expect(response.body.comments).toEqual([]);
@@ -382,7 +458,7 @@ describe("/API/ARTICLES", () => {
     describe("Error handling", () => {
       test("status: 400 - responds with err msg for invalid limit query", () => {
         return request(app)
-          .get("/api/articles/1/comments?limit=nonsense")
+          .get("/api/finds/1/comments?limit=nonsense")
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("error - invalid input");
@@ -392,39 +468,51 @@ describe("/API/ARTICLES", () => {
   });
 
   // POST testing
-  describe("POST /api/articles", () => {
-    test("status: 201 - responds with article added", () => {
+  describe("POST /api/finds", () => {
+    test("status: 201 - responds with find added", () => {
       return request(app)
-        .post("/api/articles")
+        .post("/api/finds")
         .send({
-          author: "icellusedkars",
+          author: "username_a",
           title: "New title",
-          body: "A new article",
-          topic: "mitch",
+          body: "A new find",
+          img_url: "url_string",
+          location_id: 1,
+          latitude: 53.391589,
+          longitude: -1.434896,
+          type: "type_a",
         })
         .expect(201)
         .then(({ body }) => {
-          expect(body.article).toEqual({
+          expect(body.find).toEqual({
             title: "New title",
-            topic: "mitch",
-            author: "icellusedkars",
-            body: "A new article",
+            type: "type_a",
+            author: "username_a",
+            body: "A new find",
+            img_url: expect.any(String),
+            location_id: expect.any(Number),
+            latitude: expect.any(Number),
+            longitude: expect.any(Number),
             created_at: expect.any(String),
-            votes: 0,
-            article_id: expect.any(Number),
+            likes: 0,
+            find_id: expect.any(Number),
             comment_count: 0,
           });
         });
     });
     describe("Error handling", () => {
-      test("status: 400 - error for invalid inputs (author or topic does not exist)", () => {
+      test("status: 400 - error for invalid inputs (author or type does not exist)", () => {
         return request(app)
-          .post("/api/articles")
+          .post("/api/finds")
           .send({
             author: "invalidusername",
             title: "New title",
-            body: "A new article",
-            topic: "invalidtopic",
+            body: "A new find",
+            img_url: "url_string",
+            location_id: 1,
+            latitude: 53.391589,
+            longitude: -1.434896,
+            type: "invalidtype",
           })
           .expect(400)
           .then(({ body: { msg } }) => {
@@ -433,27 +521,27 @@ describe("/API/ARTICLES", () => {
       });
     });
   });
-  describe("POST /api/articles/:article_id/comments", () => {
+  describe("POST /api/finds/:find_id/comments", () => {
     test("status: 201 - responds with comment", () => {
       return request(app)
-        .post("/api/articles/2/comments")
-        .send({ username: "icellusedkars", body: "A new comment" })
+        .post("/api/finds/2/comments")
+        .send({ username: "username_b", body: "A new comment" })
         .expect(201)
         .then(({ body }) => {
           expect(body.comment).toEqual({
-            article_id: 2,
-            author: "icellusedkars",
+            find_id: 2,
+            author: "username_b",
             body: "A new comment",
             comment_id: expect.any(Number),
             created_at: expect.any(String),
-            votes: 0,
+            likes: 0,
           });
         });
     });
     describe("Error handling", () => {
       test("status: 400 - error for invalid username (not in user table)", () => {
         return request(app)
-          .post("/api/articles/2/comments")
+          .post("/api/finds/2/comments")
           .send({ username: "invalidusername", body: "Hello" })
           .expect(400)
           .then(({ body: { msg } }) => {
@@ -464,60 +552,64 @@ describe("/API/ARTICLES", () => {
   });
 
   // PATCH testing
-  describe("PATCH /api/articles/:article_id", () => {
-    test("status:200, responds with the updated article while ignoring any keys other than inc_votes", () => {
-      const articleUpdate = {
-        inc_votes: 12,
+  describe("PATCH /api/finds/:find_id", () => {
+    test("status:200, responds with the updated find while ignoring any keys other than inc_likes", () => {
+      const findUpdate = {
+        inc_likes: 12,
         irrelevant_key: "something irrelevant",
       };
       return request(app)
-        .patch("/api/articles/1")
-        .send(articleUpdate)
+        .patch("/api/finds/1")
+        .send(findUpdate)
         .expect(200)
         .then((response) => {
-          expect(response.body.article).toEqual({
-            article_id: 1,
-            title: "Living in the shadow of a great man",
-            topic: "mitch",
-            author: "butter_bridge",
-            body: "I find this existence challenging",
+          expect(response.body.find).toEqual({
+            find_id: 1,
+            title: "title_a",
+            type: "type_a",
+            author: "username_a",
+            body: "body_a",
+            location_id: 1,
+            latitude: 53.39159,
+            longitude: -1.434896,
+            img_url: "url_string",
             created_at: "2020-07-09T20:11:00.000Z",
-            votes: 112,
+            likes: 24,
           });
         });
     });
     describe("Error handling", () => {
-      test("status:400, no inc_votes on request body", () => {
-        const articleUpdate = {
+      test("status:400, no inc_likes on request body", () => {
+        const findUpdate = {
           irrelevant_key: "something irrelevant",
         };
         return request(app)
-          .patch("/api/articles/2")
-          .send(articleUpdate)
+          .patch("/api/finds/2")
+          .send(findUpdate)
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("error - null value given");
           });
       });
-      test("status:404 invalid inc_votes provided (string)", () => {
-        const articleUpdate = {
-          inc_votes: "a string",
+      test("status:404 invalid inc_likes provided (string)", () => {
+        const findUpdate = {
+          inc_likes: "a string",
         };
         return request(app)
-          .patch("/api/articles/3")
-          .send(articleUpdate)
+          .patch("/api/finds/3")
+          .send(findUpdate)
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("error - invalid input");
           });
       });
-      test("status:404 invalid inc_votes provided (boolean)", () => {
-        const articleUpdate = {
-          inc_votes: false,
+      test("status:404 invalid inc_likes provided (boolean)", () => {
+        const findUpdate = {
+          inc_likes: false,
         };
         return request(app)
-          .patch("/api/articles/3")
-          .send(articleUpdate)
+          .patch("/api/finds/3")
+          .send(findUpdate)
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("error - invalid input");
@@ -527,25 +619,25 @@ describe("/API/ARTICLES", () => {
   });
 
   // DELETE testing
-  describe("DELETE /api/articles/:article_id", () => {
-    test("status: 204 comment is deleted", () => {
-      return request(app).delete("/api/articles/2").expect(204);
+  describe("DELETE /api/finds/:find_id", () => {
+    test("status: 204 find is deleted", () => {
+      return request(app).delete("/api/finds/3").expect(204);
     });
     describe("Error handling", () => {
-      test("400 - responds with bad request for invalid article id", () => {
+      test("400 - responds with bad request for invalid find id", () => {
         return request(app)
-          .delete("/api/articles/invalidId")
+          .delete("/api/finds/invalidId")
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("error - invalid input");
           });
       });
-      test("404 - responds with not found for valid but non-existent article id", () => {
+      test("404 - responds with not found for valid but non-existent find id", () => {
         return request(app)
-          .delete("/api/articles/99")
+          .delete("/api/finds/99")
           .expect(404)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("no article with this id exists");
+            expect(msg).toBe("no find with this id exists");
           });
       });
     });
@@ -557,9 +649,9 @@ describe("/API/ARTICLES", () => {
 describe("/API/COMMENTS", () => {
   // PATCH testing
   describe("PATCH /api/comments/:comment_id", () => {
-    test("status:200, responds with the updated comment while ignoring any keys other than inc_votes", () => {
+    test("status:200, responds with the updated comment while ignoring any keys other than inc_likes", () => {
       const commentUpdate = {
-        inc_votes: 12,
+        inc_likes: 12,
         irrelevant_key: "something irrelevant",
       };
       return request(app)
@@ -568,17 +660,17 @@ describe("/API/COMMENTS", () => {
         .expect(200)
         .then((response) => {
           expect(response.body.comment).toEqual({
-            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-            votes: 28,
-            author: "butter_bridge",
+            body: "body_a",
+            likes: 28,
+            author: "username_a",
             comment_id: 1,
-            article_id: 9,
+            find_id: 1,
             created_at: "2020-04-06T12:17:00.000Z",
           });
         });
     });
     describe("Error handling", () => {
-      test("status:400, no inc_votes on request body", () => {
+      test("status:400, no inc_likes on request body", () => {
         const commentUpdate = {
           irrelevant_key: "something irrelevant",
         };
@@ -590,9 +682,9 @@ describe("/API/COMMENTS", () => {
             expect(msg).toBe("error - null value given");
           });
       });
-      test("status:404 invalid inc_votes provided (string)", () => {
+      test("status:404 invalid inc_likes provided (string)", () => {
         const commentUpdate = {
-          inc_votes: "a string",
+          inc_likes: "a string",
         };
         return request(app)
           .patch("/api/comments/3")
@@ -602,9 +694,9 @@ describe("/API/COMMENTS", () => {
             expect(msg).toBe("error - invalid input");
           });
       });
-      test("status:404 invalid inc_votes provided (boolean)", () => {
+      test("status:404 invalid inc_likes provided (boolean)", () => {
         const commentUpdate = {
-          inc_votes: false,
+          inc_likes: false,
         };
         return request(app)
           .patch("/api/comments/3")
@@ -674,18 +766,17 @@ describe("/API/USERS", () => {
   describe("GET /api/users/:username", () => {
     test("status: 200 - responds with user", () => {
       return request(app)
-        .get("/api/users/butter_bridge")
+        .get("/api/users/username_a")
         .expect(200)
         .then((response) => {
-          // check that response object has a single key of articles/1
+          // check that response object has a single key of finds/1
           expect(Object.keys(response.body)).toHaveLength(1);
           expect(Object.keys(response.body)[0]).toEqual("user");
           expect(response.body.user).toEqual(
             expect.objectContaining({
-              username: "butter_bridge",
-              name: "jonny",
-              avatar_url:
-                "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+              username: "username_a",
+              name: "name_a",
+              avatar_url: "avatar_a",
             })
           );
         });
