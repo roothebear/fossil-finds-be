@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 
 const {
   handleCustomErrors,
@@ -7,6 +8,8 @@ const {
 
 const apiRouter = require("./routes/api.router.js");
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -20,12 +23,8 @@ app.all("/*", (req, res) => {
   res.status(404).send({ msg: "path not found" });
 });
 
-
 app.use(handleCustomErrors);
 
 app.use(handlePsqlErrors);
 
 module.exports = app;
-
-
-
