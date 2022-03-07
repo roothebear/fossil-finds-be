@@ -1,0 +1,58 @@
+module.exports = [
+  {
+    body: "body_a",
+    likes: 16,
+    author: "username_a",
+    find_id: 1,
+    created_at: 1586179020000,
+  },
+  {
+    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+    likes: 16,
+    author: "username_a",
+    find_id: 1,
+    created_at: 1586179020000,
+  },
+  {
+    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+    likes: 16,
+    author: "username_a",
+    find_id: 1,
+    created_at: 1586179020000,
+  },
+  {
+    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+    likes: 16,
+    author: "username_a",
+    find_id: 1,
+    created_at: 1586179020000,
+  },
+  {
+    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+    likes: 16,
+    author: "username_a",
+    find_id: 1,
+    created_at: 1586179020000,
+  },
+  {
+    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+    likes: 16,
+    author: "username_a",
+    find_id: 1,
+    created_at: 1586179020000,
+  },
+  {
+    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+    likes: 16,
+    author: "username_a",
+    find_id: 1,
+    created_at: 1586179020000,
+  },
+  {
+    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+    likes: 16,
+    author: "username_a",
+    find_id: 1,
+    created_at: 1586179020000,
+  },
+];
