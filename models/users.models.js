@@ -4,7 +4,6 @@ exports.selectUsers = (req) => {
   return db.query(`SELECT * FROM users;`).then((result) => result.rows);
 };
 
-
 exports.selectUserByUsername = (username) => {
   return db
     .query(
@@ -22,5 +21,20 @@ exports.selectUserByUsername = (username) => {
       } else {
         return result.rows[0];
       }
+    });
+};
+
+exports.insertUser = (username, name, avatar_url) => {
+  return db
+    .query(
+      `INSERT INTO users 
+      (username, name, avatar_url ) 
+      VALUES ( $1, $2, $3 )
+      RETURNING *;`,
+      [username, name, avatar_url]
+    )
+    .then((result) => {
+      // take user_id from user returned
+      return result.rows[0];
     });
 };

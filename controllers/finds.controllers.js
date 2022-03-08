@@ -67,8 +67,26 @@ exports.postCommentByFindId = (req, res, next) => {
 };
 
 exports.postFind = (req, res, next) => {
-  const { author, title, body, img_url, location_id, latitude, longitude, type } = req.body;
-  insertFind(author, title, body, img_url, location_id, latitude, longitude, type)
+  const {
+    author,
+    title,
+    body,
+    img_url,
+    location_id,
+    latitude,
+    longitude,
+    type,
+  } = req.body;
+  insertFind(
+    author,
+    title,
+    body,
+    img_url,
+    location_id,
+    latitude,
+    longitude,
+    type
+  )
     .then((find) => {
       res.status(201).send({ find: find });
     })
