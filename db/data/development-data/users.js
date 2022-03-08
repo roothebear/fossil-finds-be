@@ -1,24 +1,22 @@
 module.exports = [
   {
-    username: "username_a",
-    name: "name_a",
-    avatar_url:
-      "avatar_a",
+    username: "dinodina",
+    name: "Dina Dinosaur",
+    avatar_url: "https://source.unsplash.com/Yy2cBOqUN_o",
   },
   {
-    username: "username_b",
-    name: "sam",
-    avatar_url: "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
+    username: "beachcomber",
+    name: "Hannah",
+    avatar_url: "https://source.unsplash.com/c9y23cBO2UM",
   },
   {
-    username: "username_c",
-    name: "paul",
-    avatar_url: "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+    username: "rooielouis",
+    name: "Roo",
+    avatar_url: "https://source.unsplash.com/W_jcPGojOYc",
   },
   {
-    username: "username_d",
-    name: "do_nothing",
-    avatar_url:
-      "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+    username: "platypusrex",
+    name: "Lizzie",
+    avatar_url: "https://source.unsplash.com/RgkYMfFopIA",
   },
 ];

@@ -4,11 +4,15 @@ module.exports = [
     county: "Dorset",
   },
   {
-    settlement: "Charmouth",
-    county: "Dorset",
-  },
-  {
     settlement: "Compton Bay",
     county: "Isle of Wight",
+  },
+  {
+    settlement: "Oxford",
+    county: "Oxfordshire",
+  },
+  {
+    settlement: "Meersbrook",
+    county: "Sheffield",
   },
 ];
