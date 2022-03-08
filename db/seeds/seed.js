@@ -34,11 +34,12 @@ const seed = async ({
     .then((result) => result.rows);
 
   const insertUsersQueryStr = format(
-    "INSERT INTO users ( username, name, avatar_url) VALUES %L RETURNING *;",
-    userData.map(({ username, name, avatar_url }) => [
+    "INSERT INTO users ( username, name, avatar_url, bio) VALUES %L RETURNING *;",
+    userData.map(({ username, name, avatar_url, bio }) => [
       username,
       name,
       avatar_url,
+      bio
     ])
   );
   const usersPromise = db

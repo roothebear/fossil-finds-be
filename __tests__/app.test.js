@@ -745,6 +745,7 @@ describe("/API/USERS", () => {
         .get("/api/users")
         .expect(200)
         .then((response) => {
+          console.log(response.body.users)
           // check that response object has a single key of users
           expect(Object.keys(response.body)).toHaveLength(1);
           expect(Object.keys(response.body)[0]).toEqual("users");
@@ -756,6 +757,7 @@ describe("/API/USERS", () => {
                 username: expect.any(String),
                 name: expect.any(String),
                 avatar_url: expect.any(String),
+                bio: expect.any(String),
               })
             );
           });
@@ -777,6 +779,7 @@ describe("/API/USERS", () => {
               username: "username_a",
               name: "name_a",
               avatar_url: "avatar_a",
+              bio: "bio_a",
             })
           );
         });
