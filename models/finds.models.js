@@ -14,6 +14,8 @@ exports.selectFinds = (
     "author",
     "body",
     "location_id",
+    "settlement",
+    "county",
     "created_at",
     "likes",
     "comment_count",
@@ -39,10 +41,14 @@ exports.selectFinds = (
   finds.longitude,
   finds.created_at, 
   finds.likes, 
+  locations.settlement,
+  locations.county,
   COUNT(comment_id )::INT AS comment_count 
   FROM finds 
   FULL JOIN comments 
-  ON finds.find_id = comments.find_id`;
+  ON finds.find_id = comments.find_id
+  JOIN locations
+  ON finds.location_id = locations.location_id`;
 
   // deal with type
   if (type) {
@@ -54,11 +60,11 @@ exports.selectFinds = (
   const offset = limit * (page - 1);
 
   const allFindsQuery =
-    queryStr + ` GROUP BY finds.find_id ORDER BY ${sort_by} ${order};`;
+    queryStr + ` GROUP BY finds.find_id, locations.settlement, locations.county ORDER BY ${sort_by} ${order};`;
 
   const findsByPageQuery =
     queryStr +
-    ` GROUP BY finds.find_id ORDER BY ${sort_by} ${order} LIMIT $1 OFFSET $2;`;
+    ` GROUP BY finds.find_id, locations.settlement, locations.county ORDER BY ${sort_by} ${order} LIMIT $1 OFFSET $2;`;
 
   // build final result object to respond with to controller
   const resultObject = {};
@@ -105,11 +111,16 @@ exports.selectFindById = (find_id) => {
       finds.longitude,
       finds.created_at, 
       finds.likes, 
+      locations.settlement,
+      locations.county,
       COUNT(comment_id )::INT AS comment_count 
       FROM finds
-      FULL JOIN comments ON finds.find_id = comments.find_id
-            WHERE finds.find_id = $1
-        GROUP BY finds.find_id;`,
+      FULL JOIN comments 
+      ON finds.find_id = comments.find_id
+      FULL JOIN locations 
+      ON finds.location_id = locations.location_id
+      WHERE finds.find_id = $1
+      GROUP BY finds.find_id, locations.location_id;`,
       [find_id]
     )
     .then((result) => {

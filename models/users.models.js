@@ -24,6 +24,72 @@ exports.selectUserByUsername = (username) => {
     });
 };
 
+exports.selectCommentsByUsername = (username, limit = 10, page = 1) => {
+  const offset = limit * (page - 1);
+
+  const resultObject = {};
+
+  return db
+    .query(
+      `SELECT 
+      comment_id, 
+      comments.body,
+      comments.find_id, 
+      comments.author, 
+      comments.likes, 
+      comments.created_at FROM comments
+      JOIN users ON comments.author = users.username
+            WHERE comments.author = $1
+      LIMIT $2 OFFSET $3;`,
+      [username, limit, offset]
+    )
+    .then((result) => {
+      resultObject.comments = result.rows;
+      resultObject.commentCount = result.rows.length;
+      return resultObject;
+    });
+};
+
+exports.selectFindsByUsername = (username, limit = 10, page = 1) => {
+  const offset = limit * (page - 1);
+
+  const resultObject = {};
+
+  return db
+    .query(
+      `SELECT 
+  finds.find_id, 
+  finds.title, 
+  finds.type, 
+  finds.author, 
+  finds.body,
+  finds.img_url,
+  finds.location_id,
+  finds.latitude,
+  finds.longitude,
+  finds.created_at, 
+  finds.likes, 
+  locations.settlement,
+  locations.county,
+  COUNT(comment_id )::INT AS comment_count 
+  FROM finds
+  JOIN users ON finds.author = users.username
+  FULL JOIN comments 
+  ON finds.find_id = comments.find_id
+  JOIN locations
+  ON finds.location_id = locations.location_id
+  WHERE finds.author = $1
+  GROUP BY finds.find_id, locations.settlement, locations.county
+  LIMIT $2 OFFSET $3;`,
+      [username, limit, offset]
+    )
+    .then((result) => {
+      resultObject.finds = result.rows;
+      resultObject.findCount = result.rows.length;
+      return resultObject;
+    });
+};
+
 exports.insertUser = (username, name, avatar_url, bio) => {
   return db
     .query(

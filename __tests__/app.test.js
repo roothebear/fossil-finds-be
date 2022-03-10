@@ -297,6 +297,9 @@ describe("/API/FINDS", () => {
                 type: expect.any(String),
                 author: expect.any(String),
                 body: expect.any(String),
+                location_id: expect.any(Number),
+                settlement: expect.any(String),
+                county: expect.any(String),
                 img_url: expect.any(String),
                 latitude: expect.any(Number),
                 longitude: expect.any(Number),
@@ -360,6 +363,9 @@ describe("/API/FINDS", () => {
               type: expect.any(String),
               author: expect.any(String),
               body: expect.any(String),
+              location_id: expect.any(Number),
+              settlement: expect.any(String),
+              county: expect.any(String),
               img_url: expect.any(String),
               latitude: expect.any(Number),
               longitude: expect.any(Number),
@@ -384,6 +390,8 @@ describe("/API/FINDS", () => {
             author: "username_a",
             body: "body_a",
             location_id: expect.any(Number),
+            settlement: "Lyme Regis",
+            county: "Dorset",
             img_url: expect.any(String),
             latitude: expect.any(Number),
             longitude: expect.any(Number),
@@ -478,7 +486,7 @@ describe("/API/FINDS", () => {
           body: "A new find",
           img_url: "url_string",
           location_id: 1,
-          latitude: 53.391589,
+          latitude: 53.39159,
           longitude: -1.434896,
           type: "type_a",
         })
@@ -489,10 +497,12 @@ describe("/API/FINDS", () => {
             type: "type_a",
             author: "username_a",
             body: "A new find",
-            img_url: expect.any(String),
-            location_id: expect.any(Number),
-            latitude: expect.any(Number),
-            longitude: expect.any(Number),
+            img_url: "url_string",
+            location_id: 1,
+            settlement: "Lyme Regis",
+            county: "Dorset",
+            latitude: 53.39159,
+            longitude: -1.434896,
             created_at: expect.any(String),
             likes: 0,
             find_id: expect.any(Number),
@@ -745,7 +755,6 @@ describe("/API/USERS", () => {
         .get("/api/users")
         .expect(200)
         .then((response) => {
-          console.log(response.body.users)
           // check that response object has a single key of users
           expect(Object.keys(response.body)).toHaveLength(1);
           expect(Object.keys(response.body)[0]).toEqual("users");
@@ -780,6 +789,83 @@ describe("/API/USERS", () => {
               name: "name_a",
               avatar_url: "avatar_a",
               bio: "bio_a",
+            })
+          );
+        });
+    });
+    describe("Error handling", () => {
+      test("status: 404 - responds with not found for valid but non-existent username", () => {
+        return request(app)
+          .get("/api/users/validusername")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("no user with this username exists");
+          });
+      });
+    });
+  });
+  // GET comments by username
+  describe("GET /api/users/:username/comments", () => {
+    test("status: 200 - responds with user comments array", () => {
+      return request(app)
+        .get("/api/users/username_a/comments")
+        .expect(200)
+        .then((response) => {
+          // check that response object has a single key of finds/1
+          expect(Object.keys(response.body)).toHaveLength(1);
+          expect(Object.keys(response.body)[0]).toEqual("comments");
+          expect(response.body.comments.comments.length).toEqual(4);
+          expect(response.body.comments.commentCount).toEqual(4);
+          expect(response.body.comments.comments[0]).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              likes: expect.any(Number),
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(String),
+            })
+          );
+        });
+    });
+    describe("Error handling", () => {
+      test("status: 404 - responds with not found for valid but non-existent username", () => {
+        return request(app)
+          .get("/api/users/validusername")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("no user with this username exists");
+          });
+      });
+    });
+  });
+  // GET finds by username
+  describe("GET /api/users/:username/finds", () => {
+    test("status: 200 - responds with user finds array", () => {
+      return request(app)
+        .get("/api/users/username_a/finds")
+        .expect(200)
+        .then((response) => {
+          console.log("response: ", response.body.finds.finds)
+          // check that response object has a single key of finds/1
+          expect(Object.keys(response.body)).toHaveLength(1);
+          expect(Object.keys(response.body)[0]).toEqual("finds");
+          expect(response.body.finds.finds.length).toEqual(3);
+          expect(response.body.finds.findCount).toEqual(3);
+          expect(response.body.finds.finds[0]).toEqual(
+            expect.objectContaining({
+              find_id: expect.any(Number),
+              title: expect.any(String),
+              type: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              location_id: expect.any(Number),
+              settlement: expect.any(String),
+              county: expect.any(String),
+              img_url: expect.any(String),
+              latitude: expect.any(Number),
+              longitude: expect.any(Number),
+              created_at: expect.any(String),
+              likes: expect.any(Number),
             })
           );
         });

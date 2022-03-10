@@ -1,6 +1,8 @@
 const {
   selectUsers,
   selectUserByUsername,
+  selectFindsByUsername,
+  selectCommentsByUsername,
   insertUser,
   updateUserByUsername,
   // deleteUserByUsername,
@@ -57,6 +59,31 @@ exports.removeUserByUsername = (req, res, next) => {
       res.sendStatus(204);
     })
     .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getFindsByUsername = (req, res, next) => {
+  const { username } = req.params;
+  const { limit, page } = req.query;
+  selectFindsByUsername(username, limit, page)
+    .then((finds) => {
+      res.status(200).send({ finds: finds });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getCommentsByUsername = (req, res, next) => {
+  const { username } = req.params;
+  const { limit, page } = req.query;
+  selectCommentsByUsername(username, limit, page)
+    .then((comments) => {
+      res.status(200).send({comments: comments});
+    })
+    .catch((err) => {
+      console.log(err)
       next(err);
     });
 };
