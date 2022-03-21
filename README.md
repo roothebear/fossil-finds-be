@@ -2,10 +2,38 @@
 
 Fossil Finds is a web application allowing members of the public and researchers alike to search and contribute to a database of fossil finds in the UK. Fossil Finds Back End - the content of this repository - is the relational database (POSTGRES) and API used by Fossil Finds.
 
+[Click here to access the web application] (https://fossil-finds.netlify.app/)
 
-## Connect to databases locally
+[Click here to access the API] (https://fossil-finds.herokuapp.com/api)
+
+[Click here to see the Fossil Finds Front-End repository] (https://github.com/Roothebear/fossil-finds-fe)
+
+I built Fossil Finds as part of my time on the Northcoders Software Development Bootcamp (https://northcoders.com/).
 
 
+## Local Development Set-Up
+
+The information below will give you all the information required to set up this project yourself.
+
+### Pre-requisites
+
+Install Node.js which acts as the runtime environment for this project. This should also install npm to manage all of the
+required dependencies.
+
+[Follow this link to download Node.js with npm]. (https://nodejs.org/en/download/current/)
+
+Minimum version recommended: Node v16.8.0
+
+Install PostgreSQL which is used as the database server for this project.
+
+[Follow this link to download PostgreSQL]. (https://www.postgresql.org/download/)
+
+Minimum version recommended: PostgreSQL v13.4
+
+### Clone Repository
+To clone the repository for access on your local machine, run the following command in your terminal:
+
+`git clone https://github.com/roothebear/fossil-finds-be.git`
 
 ### Required NPM packages
 
@@ -31,3 +59,27 @@ You will also need to set up .env.development and .env.test files in your projec
 
 - In .env.development file: PGDATABASE=your-database-name-here
 - In .env.test file: PGDATABASE=your-database-name-here-test
+
+### Setup Databases
+
+To create the Postgres databases for both the tests and for the local server, run the following command in your terminal:
+
+`npm run setup-dbs`
+
+To seed the local server database, run the following command in your terminal:
+
+`npm run seed`
+
+The test database does not need to be seeded manually as it is seeded before every test is run.
+
+### Run Tests
+To run all test suites, run the following command in your terminal:
+
+`npm test`
+
+### Run Local Server
+To run the server on your local machine, run the following command in the terminal:
+
+`npm run start`
+
+You should see a message in the console that tells you the app is listening on the port defined in the code.
