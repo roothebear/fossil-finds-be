@@ -1,6 +1,6 @@
 # Fossil Finds Back End
 
-Fossil Finds is a web application allowing members of the public and researchers alike to search and contribute to a database of fossil finds in the UK. Fossil Finds Back End - the content of this repository - is the relational database (POSTGRES) and API used by Fossil Finds.
+Fossil Finds is a web application allowing members of the public and researchers alike to search and contribute to a database of fossil finds in the UK. Fossil Finds Back End - the content of this repository - is the relational database (PostgreSQL) and API used by Fossil Finds.
 
 <br />
 
@@ -25,18 +25,20 @@ The information below will give you all the information required to set up this 
 
 ### Pre-requisites
 
-Install Node.js which acts as the runtime environment for this project. This should also install npm to manage all of the
+- Install Node.js which acts as the runtime environment for this project. This should also install npm to manage all of the
 required dependencies.
 
-[Follow this link to download Node.js with npm](https://nodejs.org/en/download/current/).
+   [Follow this link to download Node.js with npm](https://nodejs.org/en/download/current/).
 
-Minimum version recommended: Node v16.8.0
+   Minimum version recommended: Node v16.8.0
 
-Install PostgreSQL which is used as the database server for this project.
+<br />
 
-[Follow this link to download PostgreSQL](https://www.postgresql.org/download/).
+- Install PostgreSQL which is used as the database server for this project.
 
-Minimum version recommended: PostgreSQL v13.4
+   [Follow this link to download PostgreSQL](https://www.postgresql.org/download/).
+
+   Minimum version recommended: PostgreSQL v13.4
 
 <br />
 
