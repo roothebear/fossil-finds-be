@@ -2,79 +2,163 @@
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api"
   },
-  "GET /api/topics": {
-    "description": "serves an array of all topics",
+  "GET /api/types": {
+    "description": "serves an array of all types",
     "queries": [],
     "exampleResponse": {
-      "topics": [
+      "types": [
         {
-          "slug": "football",
-          "description": "Footie!"
+          "description": "Ammonites and more...!",
+          "slug": "Mollusc"
+        },
+        {
+          "description": "Do I really need to explain what a dinosaur is? :)",
+          "slug": "Dinosaur"
         }
       ]
     }
   },
-  "GET /api/articles": {
-    "description": "serves an array of all topics",
-    "queries": [
-      "author",
-      "topic",
-      "sort_by",
-      "order"
-    ],
+  "POST /api/types": {
+    "description": "adds a new type",
+    "body": {
+      "description": "Ammonites and more...!",
+      "slug": "Mollusc"
+    },
     "exampleResponse": {
-      "articles": [
-        {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
-        }
-      ]
+      "type": {
+        "description": "Ammonites and more...!",
+        "slug": "Mollusc"
+      }
     }
   },
-  "GET /api/articles/:article_id": {
-    "description": "serves an article by id",
+  "GET /api/locations": {
+    "description": "serves an array of all locations",
     "queries": [],
     "exampleResponse": {
-      "article": [
+      "locations": [
         {
-          "title": "Living in the shadow of a great man",
-          "topic": "mitch",
-          "author": "butter_bridge",
-          "body": "I find this existence challenging",
-          "created_at": 1594329060000,
-          "votes": 100
+          "settlement": "Lyme Regis",
+          "county": "Dorset"
+        },
+        {
+          "settlement": "Compton Bay",
+          "county": "Isle of Wight"
         }
       ]
     }
   },
-  "GET /api/articles/:article_id/comments": {
-    "description": "serves an article's comments by article id",
+  "POST /api/locations": {
+    "description": "adds a new location",
+    "body": {
+      "settlement": "Lyme Regis",
+      "county": "Dorset"
+    },
+    "exampleResponse": {
+      "location": {
+        "settlement": "Lyme Regis",
+        "county": "Dorset"
+      }
+    }
+  },
+  "GET /api/finds": {
+    "description": "serves an array of all finds",
+    "queries": ["author", "type", "sort_by", "order"],
+    "exampleResponse": {
+      "finds": [
+        {
+          "title": "Beautiful Ammonite!",
+          "type": "Mollusc",
+          "author": "dinodina",
+          "body": "Wow, so happy to find this on the beach last weekend, such a cool fossil! Just walking along and spotted it almost by accident. Keep your eyes peeled to find one yourself!",
+          "img_url": "https://source.unsplash.com/PMlBcuUf81E",
+          "location_id": 1,
+          "latitude": 50.72654,
+          "longitude": -2.93477,
+          "created_at": 1583679411000,
+          "likes": 3
+        },
+        {
+          "title": "Dinosaur footprint?",
+          "type": "Dinosaur",
+          "author": "beachcomber",
+          "body": "Just having a stroll with the dog in Compton Bay and came across this curious footprint - I wonder what it is? Any help identifying would be much appreciated!",
+          "img_url": "https://source.unsplash.com/gj-WZ74SrcI",
+          "location_id": 2,
+          "latitude": 50.6562,
+          "longitude": -1.4757,
+          "created_at": 1622640651000,
+          "likes": 14
+        }
+      ]
+    }
+  },
+  "POST /api/finds": {
+    "description": "adds a find",
+    "body": {
+      "title": "Beautiful Ammonite!",
+      "type": "Mollusc",
+      "author": "dinodina",
+      "body": "Wow, so happy to find this on the beach last weekend, such a cool fossil! Just walking along and spotted it almost by accident. Keep your eyes peeled to find one yourself!",
+      "img_url": "https://source.unsplash.com/PMlBcuUf81E",
+      "location_id": 1,
+      "latitude": 50.72654,
+      "longitude": -2.93477,
+      "created_at": 1583679411000,
+      "likes": 3
+    },
+    "exampleResponse": {
+      "find": {
+        "title": "Beautiful Ammonite!",
+        "type": "Mollusc",
+        "author": "dinodina",
+        "body": "Wow, so happy to find this on the beach last weekend, such a cool fossil! Just walking along and spotted it almost by accident. Keep your eyes peeled to find one yourself!",
+        "img_url": "https://source.unsplash.com/PMlBcuUf81E",
+        "location_id": 1,
+        "latitude": 50.72654,
+        "longitude": -2.93477,
+        "created_at": 1583679411000,
+        "likes": 3
+      }
+    }
+  },
+  "GET /api/finds/:find_id": {
+    "description": "serves a find by id",
+    "queries": [],
+    "exampleResponse": {
+      "find": [
+        {
+          "title": "Dinosaur footprint?",
+          "type": "Dinosaur",
+          "author": "beachcomber",
+          "body": "Just having a stroll with the dog in Compton Bay and came across this curious footprint - I wonder what it is? Any help identifying would be much appreciated!",
+          "img_url": "https://source.unsplash.com/gj-WZ74SrcI",
+          "location_id": 2,
+          "latitude": 50.6562,
+          "longitude": -1.4757,
+          "created_at": 1622640651000,
+          "likes": 14
+        }
+      ]
+    }
+  },
+  "GET /api/finds/:find_id/comments": {
+    "description": "serves a find's comments by find id",
     "queries": [],
     "exampleResponse": {
       "comments": [
         {
-          "body": "Comment 1",
-          "votes": 16,
-          "author": "author1",
-          "article_id": 1,
-          "created_at": 1586179020000
+          "body": "Where can I find one of my own?",
+          "likes": 4,
+          "author": "rooielouis",
+          "find_id": 1,
+          "created_at": 1641461291000
         },
         {
-          "body": "Comment 2",
-          "votes": 16,
-          "author": "author2",
-          "article_id": 1,
-          "created_at": 1586179020000
-        },
-        {
-          "body": "Comment 3",
-          "votes": 16,
-          "author": "author3",
-          "article_id": 1,
-          "created_at": 1586179020000
+          "body": "Super excited that you found this, well done :)",
+          "likes": 10,
+          "author": "beachcomber",
+          "find_id": 1,
+          "created_at": 1640431291000
         }
       ]
     }
@@ -85,9 +169,84 @@
     "exampleResponse": {
       "users": [
         {
-          "username": "username",
-          "name": "name",
-          "avatar_url": "https: //www.example.com/wp-content/uploads/2022/01/string.jpg"
+          "username": "dinodina",
+          "name": "Dina Dinosaur",
+          "avatar_url": "https://source.unsplash.com/Yy2cBOqUN_o",
+          "bio": "Always been a big fossil lover, here to share my finds!"
+        },
+        {
+          "username": "beachcomber",
+          "name": "Hannah",
+          "avatar_url": "https://source.unsplash.com/c9y23cBO2UM",
+          "bio": "Never happier than when on a windswept beach."
+        }
+      ]
+    }
+  },
+  "POST /api/users": {
+    "description": "adds a new user",
+    "body": {
+      "username": "dinodina",
+      "name": "Dina Dinosaur",
+      "avatar_url": "https://source.unsplash.com/Yy2cBOqUN_o",
+      "bio": "Always been a big fossil lover, here to share my finds!"
+    },
+    "exampleResponse": {
+      "user": {
+        "username": "dinodina",
+        "name": "Dina Dinosaur",
+        "avatar_url": "https://source.unsplash.com/Yy2cBOqUN_o",
+        "bio": "Always been a big fossil lover, here to share my finds!"
+      }
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "get user by username",
+    "queries": {},
+    "exampleResponse": {
+      "user": {
+        "username": "dinodina",
+        "name": "Dina Dinosaur",
+        "avatar_url": "https://source.unsplash.com/Yy2cBOqUN_o",
+        "bio": "Always been a big fossil lover, here to share my finds!"
+      }
+    }
+  },
+  "PATCH /api/users/:username": {
+    "description": "updates user by username",
+    "body": {
+      "username": "dinodina",
+      "name": "Dina Dinosaur",
+      "avatar_url": "https://source.unsplash.com/Yy2cBOqUN_o",
+      "bio": "Always been a big fossil lover, here to share my finds!"
+    },
+    "exampleResponse": {
+      "user": {
+        "username": "dinodina",
+        "name": "Dina Dinosaur",
+        "avatar_url": "https://source.unsplash.com/Yy2cBOqUN_o",
+        "bio": "Always been a big fossil lover, here to share my finds!"
+      }
+    }
+  },
+  "GET /api/users/:username/comments": {
+    "description": "serves a user's comments by username",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "body": "Where can I find one of my own?",
+          "likes": 4,
+          "author": "rooielouis",
+          "find_id": 1,
+          "created_at": 1641461291000
+        },
+        {
+          "body": "Super excited that you found this, well done :)",
+          "likes": 10,
+          "author": "beachcomber",
+          "find_id": 1,
+          "created_at": 1640431291000
         }
       ]
     }
@@ -98,58 +257,75 @@
     "exampleResponse": {
       "comments": [
         {
-          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-          "votes": 16,
-          "author": "butter_bridge",
-          "article_id": 9,
-          "created_at": 1586179020000
+          "body": "Where can I find one of my own?",
+          "likes": 4,
+          "author": "rooielouis",
+          "find_id": 1,
+          "created_at": 1641461291000
         },
         {
-          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-          "votes": 16,
-          "author": "butter_bridge",
-          "article_id": 9,
-          "created_at": 1586179020000
-        },
-        {
-          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-          "votes": 16,
-          "author": "butter_bridge",
-          "article_id": 9,
-          "created_at": 1586179020000
+          "body": "Super excited that you found this, well done :)",
+          "likes": 10,
+          "author": "beachcomber",
+          "find_id": 1,
+          "created_at": 1640431291000
         }
       ]
     }
   },
-  "POST /api/articles/:article_id/comments": {
-    "description": "adds a new comment to an article by id",
+  "POST /api/finds/:find_id/comments": {
+    "description": "adds a new comment to a find by id",
     "queries": [],
     "exampleResponse": {
       "comment": [
         {
-          "body": "New comment",
-          "votes": 16,
-          "author": "author",
-          "article_id": 9,
-          "created_at": 1586179020000
+          "body": "Where can I find one of my own?",
+          "likes": 4,
+          "author": "rooielouis",
+          "find_id": 1,
+          "created_at": 1641461291000
+        },
+        {
+          "body": "Super excited that you found this, well done :)",
+          "likes": 10,
+          "author": "beachcomber",
+          "find_id": 1,
+          "created_at": 1640431291000
         }
       ]
     }
   },
-  "PATCH /api/articles/:article_id": {
-    "description": "update an article vote count",
+  "PATCH /api/finds/:find_id": {
+    "description": "update a find vote count",
     "queries": [],
     "exampleResponse": {
-      "article": [
+      "find": [
         {
-          "title": "Living in the shadow of a great man",
-          "topic": "mitch",
-          "author": "butter_bridge",
-          "body": "I find this existence challenging",
-          "created_at": 1594329060000,
-          "votes": 103
+          "title": "Beautiful Ammonite!",
+          "type": "Mollusc",
+          "author": "dinodina",
+          "body": "Wow, so happy to find this on the beach last weekend, such a cool fossil! Just walking along and spotted it almost by accident. Keep your eyes peeled to find one yourself!",
+          "img_url": "https://source.unsplash.com/PMlBcuUf81E",
+          "location_id": 1,
+          "latitude": 50.72654,
+          "longitude": -2.93477,
+          "created_at": 1583679411000,
+          "likes": 4
         }
       ]
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Update a comment by id",
+    "body": {"inc_likes": 1},
+    "exampleResponse": {
+      "comment": {
+        "body": "Super excited that you found this, well done :)",
+        "likes": 11,
+        "author": "beachcomber",
+        "find_id": 1,
+        "created_at": 1640431291000
+      }
     }
   },
   "DELETE /api/comments/:comment_id": {
