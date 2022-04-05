@@ -51,6 +51,19 @@ To clone the repository for access on your local machine, run the following comm
 
 <br />
 
+### Install Dependencies
+Navigate to the folder to which the repository was cloned and run the following command in your terminal:
+
+<br />
+
+`npm install`
+
+<br />
+
+This will install all necessary dependencies used in the project, such as React, React-Router, and Axios.
+
+<br />
+
 ### Required NPM packages
 
 In order to set up and connect to your development and test databases locally, you will need to install the following npm modules in your project directory:
